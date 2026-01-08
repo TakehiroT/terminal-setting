@@ -40,6 +40,10 @@ mkdir -p ~/.claude/skills/orchestrator
 mkdir -p ~/.claude/skills/worker
 mkdir -p ~/.codex/skills/reviewer
 
+# Ghostty設定ディレクトリ (macOS)
+GHOSTTY_CONFIG_DIR="$HOME/Library/Application Support/com.mitchellh.ghostty"
+mkdir -p "$GHOSTTY_CONFIG_DIR"
+
 # ファイルコピー
 echo "設定ファイルをコピー中..."
 
@@ -60,6 +64,9 @@ cp claude/skills/worker/SKILL.md ~/.claude/skills/worker/
 
 # Codex skills
 cp codex/skills/reviewer/SKILL.md ~/.codex/skills/reviewer/
+
+# Ghostty
+cp ghostty/config "$GHOSTTY_CONFIG_DIR/"
 
 echo ""
 echo "=== インストール完了 ==="

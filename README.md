@@ -2,6 +2,27 @@
 
 Ghostty + Zellij + Yazi を使った IDE 風ターミナル設定
 
+## Ghostty 設定
+
+透明背景・ぼかし効果のモダンなターミナル設定:
+
+```
+font-family = "UDEV Gothic 35"
+font-size = 13
+background-opacity = 0.70
+background-blur-radius = 20
+theme = "Kanagawa Dragon"
+```
+
+主な設定:
+- **フォント**: UDEV Gothic 35 (日本語対応等幅フォント)
+- **テーマ**: Kanagawa Dragon (落ち着いた配色)
+- **透明度**: 70% + ぼかし効果
+- **タイトルバー**: タブ形式 (macOS)
+- **カーソル**: ブロック (点滅なし)
+- **クリップボード**: 選択で自動コピー
+- **音声入力対応**: Secure Input 無効化
+
 ## スクリーンショット
 
 ```
@@ -144,6 +165,10 @@ chmod +x install.sh
 またはファイルを手動でコピー:
 
 ```bash
+# Ghostty 設定 (macOS)
+mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
+cp ghostty/config "$HOME/Library/Application Support/com.mitchellh.ghostty/"
+
 # Zellij レイアウト
 mkdir -p ~/.config/zellij/layouts
 cp zellij/layouts/ide.kdl ~/.config/zellij/layouts/
@@ -245,6 +270,9 @@ zja       # セッションにアタッチ
 ## ファイル構成
 
 ```
+~/Library/Application Support/com.mitchellh.ghostty/
+└── config                         # Ghostty 設定
+
 ~/.config/
 ├── zellij/
 │   ├── layouts/
