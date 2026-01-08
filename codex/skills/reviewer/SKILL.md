@@ -75,7 +75,7 @@ description: Zellij Implタブでレビュアーとして動作。Workerの実�
 
 1. Orchestratorからレビュー依頼を受け取る
 2. `.spec/<feature>/` の進捗を確認
-3. 該当コードをレビュー
+3. **`/review` コマンドを使って該当コードをレビュー**
 4. レビュー結果を `review.md` に記録
 5. 問題があればOrchestratorに報告
 
