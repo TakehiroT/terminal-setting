@@ -34,15 +34,32 @@ fi
 # ディレクトリ作成
 echo "ディレクトリを作成中..."
 mkdir -p ~/.config/zellij/layouts
+mkdir -p ~/.config/zellij/scripts
 mkdir -p ~/.config/yazi/plugins/zellij-nav.yazi
+mkdir -p ~/.claude/skills/orchestrator
+mkdir -p ~/.claude/skills/worker
+mkdir -p ~/.codex/skills/reviewer
 
 # ファイルコピー
 echo "設定ファイルをコピー中..."
+
+# Zellij
 cp zellij/layouts/ide.kdl ~/.config/zellij/layouts/
+cp zellij/scripts/claude-orchestrator.sh ~/.config/zellij/scripts/
+chmod +x ~/.config/zellij/scripts/claude-orchestrator.sh
+
+# Yazi
 cp yazi/yazi.toml ~/.config/yazi/
 cp yazi/keymap.toml ~/.config/yazi/
 cp yazi/init.lua ~/.config/yazi/
 cp yazi/plugins/zellij-nav.yazi/main.lua ~/.config/yazi/plugins/zellij-nav.yazi/
+
+# Claude skills
+cp claude/skills/orchestrator/SKILL.md ~/.claude/skills/orchestrator/
+cp claude/skills/worker/SKILL.md ~/.claude/skills/worker/
+
+# Codex skills
+cp codex/skills/reviewer/SKILL.md ~/.codex/skills/reviewer/
 
 echo ""
 echo "=== インストール完了 ==="
@@ -60,3 +77,9 @@ echo '# Yazi'
 echo 'alias y="yazi"'
 echo ""
 echo "その後、'source ~/.bashrc' を実行し、'ide' で起動してください。"
+echo ""
+echo "=== AIスキル ==="
+echo "Claude: ~/.claude/skills/ に orchestrator, worker スキルをインストール済み"
+echo "Codex: ~/.codex/skills/ に reviewer スキルをインストール済み"
+echo ""
+echo "ImplタブでAI並列開発を開始するには、'ide' で起動後 Alt+3 でImplタブへ移動してください。"
