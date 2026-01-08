@@ -75,7 +75,16 @@ Ghostty + Zellij + Yazi を使った IDE 風ターミナル設定
 ### gtr インストール
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/coderabbitai/git-worktree-runner/main/install.sh | bash
+# リポジトリをクローン
+git clone https://github.com/coderabbitai/git-worktree-runner.git
+cd git-worktree-runner
+
+# インストール
+./install.sh
+
+# クリーンアップ（オプション）
+cd ..
+rm -rf git-worktree-runner
 ```
 
 ### gtr 使い方
@@ -114,9 +123,6 @@ brew install zellij yazi neovim bat glow lazygit fd ripgrep
 # AI ツール（オプション）
 # Claude Code: https://claude.ai/download
 # Codex: npm install -g @openai/codex
-
-# Git Worktree Runner（推奨）
-curl -fsSL https://raw.githubusercontent.com/coderabbitai/git-worktree-runner/main/install.sh | bash
 ```
 
 ## インストール
@@ -135,7 +141,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-または手動でコピー:
+またはファイルを手動でコピー:
 
 ```bash
 # Zellij レイアウト
