@@ -36,7 +36,7 @@ zellij action focus-next-pane && sleep 0.3 && zellij action write-chars 'worker�
 ### Reviewer (Codex, Pane 2) に指示:
 
 ```bash
-zellij action focus-next-pane && zellij action focus-next-pane && sleep 0.3 && zellij action write-chars 'reviewerスキルを使って、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane && zellij action focus-previous-pane
+zellij action focus-next-pane && zellij action focus-next-pane && sleep 0.3 && zellij action write-chars '/review を実行して、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane && zellij action focus-previous-pane
 ```
 
 ### Backend (Pane 3) に指示:
@@ -75,7 +75,7 @@ zellij action focus-next-pane && zellij action focus-next-pane && zellij action 
 ### 1. Reviewerにレビュー依頼
 
 ```bash
-zellij action focus-next-pane && zellij action focus-next-pane && sleep 0.3 && zellij action write-chars 'reviewerスキルを使って、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane && zellij action focus-previous-pane
+zellij action focus-next-pane && zellij action focus-next-pane && sleep 0.3 && zellij action write-chars '/review を実行して、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane && zellij action focus-previous-pane
 ```
 
 ### 2. レビュー結果を確認
