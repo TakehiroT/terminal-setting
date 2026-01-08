@@ -6,7 +6,7 @@ Ghostty + Zellij + Yazi を使った IDE 風ターミナル設定
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│  Code  │  Git  │  Claude  │  Codex  │            (タブバー) │
+│  Code  │  Git  │  Impl  │                      (タブバー) │
 ├────────────┬────────────────────────────────────────────────────┤
 │            │                                                │
 │   Yazi     │              Preview / Editor                  │
@@ -27,7 +27,52 @@ Ghostty + Zellij + Yazi を使った IDE 風ターミナル設定
 - **ディレクトリ同期**: Yaziでディレクトリ移動すると、ターミナルも自動で追従
 - **Markdown対応**: `.md`ファイルはglowで読みやすく表示
 - **Git連携**: `g`キーでlazygitを起動
-- **複数タブ**: Code / Git / Claude / Codex タブ
+- **AI並列開発**: Implタブで4つのClaude + Codexによるオーケストレーション
+
+## タブ構成
+
+| タブ | 内容 |
+|------|------|
+| Code | Yazi + Preview + Terminal |
+| Git | lazygit |
+| Impl | Claude x4 + Codex (オーケストレーション) |
+
+## Impl タブ（AI並列開発）
+
+```
+┌─────────────┬─────────────┬──────────────┐
+│ orchestrator│  frontend   │              │
+│  (Pane 0)   │  (Pane 1)   │              │
+├─────────────┼─────────────┤   reviewer   │
+│  backend    │    test     │  (Pane 2)    │
+│  (Pane 3)   │  (Pane 4)   │              │
+└─────────────┴─────────────┴──────────────┘
+       Claude 4ペイン (2x2)    Codex 1ペイン
+```
+
+### 役割分担
+
+- **Orchestrator**: 全体の指揮、タスク分割、進捗管理
+- **Frontend**: UI/UX実装、コンポーネント作成
+- **Backend**: API、ロジック、データベース
+- **Test**: テスト作成、テスト実行
+- **Reviewer (Codex)**: コードレビュー、品質チェック
+
+### 使い方
+
+1. `ide` でZellijを起動
+2. `Alt+3` でImplタブへ移動
+3. 約20秒後に全ペインにスキルが自動適用される
+4. Orchestratorにタスクを依頼
+
+### スキルのインストール
+
+Claude Code用のスキルは[tamat-marketplace](https://github.com/TamaT-LLC/tamat-claude-market-place)からインストール:
+
+```bash
+# Claude Codeで実行
+/plugin install orchestration@tamat-marketplace
+```
 
 ## 必要なツール
 
@@ -62,6 +107,11 @@ chmod +x install.sh
 # Zellij レイアウト
 mkdir -p ~/.config/zellij/layouts
 cp zellij/layouts/ide.kdl ~/.config/zellij/layouts/
+
+# Zellij スクリプト
+mkdir -p ~/.config/zellij/scripts
+cp zellij/scripts/claude-orchestrator.sh ~/.config/zellij/scripts/
+chmod +x ~/.config/zellij/scripts/claude-orchestrator.sh
 
 # Yazi 設定
 mkdir -p ~/.config/yazi/plugins/zellij-nav.yazi
@@ -128,7 +178,7 @@ ide
 
 | キー | 動作 |
 |------|------|
-| `Alt+1/2/3/4` | タブ切り替え |
+| `Alt+1/2/3` | タブ切り替え |
 | `Ctrl+p` → `h/j/k/l` | ペイン移動 |
 | `Ctrl+p` → `n` | 新規ペイン |
 | `Ctrl+p` → `x` | ペインを閉じる |
@@ -148,8 +198,10 @@ zja       # セッションにアタッチ
 ```
 ~/.config/
 ├── zellij/
-│   └── layouts/
-│       └── ide.kdl              # Zellij レイアウト定義
+│   ├── layouts/
+│   │   └── ide.kdl              # Zellij レイアウト定義
+│   └── scripts/
+│       └── claude-orchestrator.sh # スキル自動起動スクリプト
 └── yazi/
     ├── yazi.toml                # Yazi 基本設定
     ├── keymap.toml              # キーマップ設定
