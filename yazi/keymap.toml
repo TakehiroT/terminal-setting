@@ -1,0 +1,99 @@
+# Yazi キーマップ設定 - Zellij連携
+
+# === Zellij連携キー（prepend_keymapで優先） ===
+[[mgr.prepend_keymap]]
+on = "<Enter>"
+run = "plugin zellij-nav -- preview"
+desc = "右上ペインでプレビュー"
+
+[[mgr.prepend_keymap]]
+on = "e"
+run = "plugin zellij-nav -- edit"
+desc = "右上ペインでNeovim"
+
+[[mgr.prepend_keymap]]
+on = "g"
+run = "plugin zellij-nav -- git"
+desc = "右上ペインでlazygit"
+
+[manager]
+keymap = [
+    # 基本操作
+    { on = [ "q" ], run = "quit", desc = "Yaziを終了" },
+    { on = [ "<Esc>" ], run = "escape", desc = "選択解除/モード終了" },
+    { on = [ "<C-c>" ], run = "quit", desc = "Yaziを終了" },
+
+    # ナビゲーション
+    { on = [ "k" ], run = "arrow -1", desc = "上に移動" },
+    { on = [ "j" ], run = "arrow 1", desc = "下に移動" },
+    { on = [ "<Up>" ], run = "arrow -1", desc = "上に移動" },
+    { on = [ "<Down>" ], run = "arrow 1", desc = "下に移動" },
+    { on = [ "K" ], run = "arrow -5", desc = "5行上に移動" },
+    { on = [ "J" ], run = "arrow 5", desc = "5行下に移動" },
+
+    { on = [ "h" ], run = "leave", desc = "親ディレクトリへ" },
+    { on = [ "l" ], run = "enter", desc = "ディレクトリに入る" },
+    { on = [ "<Left>" ], run = "leave", desc = "親ディレクトリへ" },
+    { on = [ "<Right>" ], run = "enter", desc = "ディレクトリに入る" },
+
+    { on = [ "g", "g" ], run = "arrow -99999999", desc = "先頭へ" },
+    { on = [ "G" ], run = "arrow 99999999", desc = "末尾へ" },
+    { on = [ "~" ], run = "cd ~", desc = "ホームディレクトリへ" },
+
+    # 選択操作
+    { on = [ "<Space>" ], run = [ "select --state=none", "arrow 1" ], desc = "選択トグル" },
+    { on = [ "v" ], run = "visual_mode", desc = "ビジュアルモード" },
+    { on = [ "V" ], run = "visual_mode --unset", desc = "ビジュアルモード解除" },
+    { on = [ "a" ], run = "select_all --state=true", desc = "すべて選択" },
+    { on = [ "A" ], run = "select_all --state=none", desc = "選択解除" },
+
+    # ファイル操作
+    { on = [ "y" ], run = "yank", desc = "コピー" },
+    { on = [ "x" ], run = "yank --cut", desc = "カット" },
+    { on = [ "p" ], run = "paste", desc = "ペースト" },
+    { on = [ "P" ], run = "paste --force", desc = "強制ペースト" },
+    { on = [ "d" ], run = "remove", desc = "ゴミ箱へ移動" },
+    { on = [ "D" ], run = "remove --permanently", desc = "完全削除" },
+    { on = [ "c" ], run = "create", desc = "新規作成" },
+    { on = [ "r" ], run = "rename --cursor=before_ext", desc = "リネーム" },
+
+    # 隠しファイル
+    { on = [ "." ], run = "hidden toggle", desc = "隠しファイル切り替え" },
+
+    # 検索
+    { on = [ "/" ], run = "search fd", desc = "検索" },
+    { on = [ "n" ], run = "search_next", desc = "次の検索結果" },
+    { on = [ "N" ], run = "search_prev", desc = "前の検索結果" },
+    { on = [ "f" ], run = "filter --smart", desc = "フィルター" },
+
+    # ソート
+    { on = [ "s", "n" ], run = "sort natural --reverse=no", desc = "名前順" },
+    { on = [ "s", "m" ], run = "sort mtime --reverse", desc = "更新日時順" },
+    { on = [ "s", "s" ], run = "sort size --reverse", desc = "サイズ順" },
+
+    # シェル
+    { on = [ ":" ], run = "shell --interactive", desc = "シェルコマンド" },
+]
+
+[input]
+keymap = [
+    { on = [ "<Esc>" ], run = "close", desc = "キャンセル" },
+    { on = [ "<Enter>" ], run = "close --submit", desc = "確定" },
+    { on = [ "<Left>" ], run = "move -1", desc = "左へ" },
+    { on = [ "<Right>" ], run = "move 1", desc = "右へ" },
+    { on = [ "<Backspace>" ], run = "backspace", desc = "削除" },
+]
+
+[select]
+keymap = [
+    { on = [ "<Esc>" ], run = "close", desc = "キャンセル" },
+    { on = [ "<Enter>" ], run = "close --submit", desc = "確定" },
+    { on = [ "k" ], run = "arrow -1", desc = "上へ" },
+    { on = [ "j" ], run = "arrow 1", desc = "下へ" },
+]
+
+[help]
+keymap = [
+    { on = [ "<Esc>" ], run = "escape", desc = "閉じる" },
+    { on = [ "q" ], run = "close", desc = "閉じる" },
+]
