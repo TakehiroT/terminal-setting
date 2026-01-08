@@ -185,14 +185,11 @@ cp yazi/keymap.toml ~/.config/yazi/
 cp yazi/init.lua ~/.config/yazi/
 cp yazi/plugins/zellij-nav.yazi/main.lua ~/.config/yazi/plugins/zellij-nav.yazi/
 
-# Claude skills
-mkdir -p ~/.claude/skills/orchestrator ~/.claude/skills/worker
-cp claude/skills/orchestrator/SKILL.md ~/.claude/skills/orchestrator/
-cp claude/skills/worker/SKILL.md ~/.claude/skills/worker/
-
 # Codex skills
 mkdir -p ~/.codex/skills/reviewer
 cp codex/skills/reviewer/SKILL.md ~/.codex/skills/reviewer/
+
+# Claude Code skills (プラグインとしてインストール - 後述)
 ```
 
 ### 3. シェルエイリアスを追加
@@ -211,7 +208,23 @@ alias zjkill="zellij delete-all-sessions -f"
 alias y="yazi"
 ```
 
-### 4. シェルを再読み込み
+### 4. Claude Code プラグインをインストール
+
+このリポジトリはClaude Codeプラグインマーケットプレイスとして機能します。
+
+```bash
+# マーケットプレイスを追加
+/plugin marketplace add TakehiroT/terminal-setting
+
+# プラグインをインストール
+/plugin install zellij-orchestration@terminal-setting
+```
+
+**含まれるスキル:**
+- `orchestrator` - タスク分割と進捗管理
+- `worker` - 担当部分の実装
+
+### 5. シェルを再読み込み
 
 ```bash
 source ~/.bashrc  # or ~/.zshrc
@@ -287,12 +300,16 @@ zja       # セッションにアタッチ
         └── zellij-nav.yazi/
             └── main.lua           # Zellij 連携プラグイン
 
-~/.claude/skills/
-├── orchestrator/SKILL.md        # オーケストレータースキル
-└── worker/SKILL.md              # ワーカースキル
+codex/skills/
+└── reviewer/SKILL.md              # レビュアースキル (Codex用)
 
-~/.codex/skills/
-└── reviewer/SKILL.md            # レビュアースキル
+plugins/                           # Claude Code プラグイン
+└── zellij-orchestration/
+    ├── .claude-plugin/
+    │   └── plugin.json
+    └── skills/
+        ├── orchestrator/SKILL.md  # オーケストレータースキル
+        └── worker/SKILL.md        # ワーカースキル
 ```
 
 ## カスタマイズ

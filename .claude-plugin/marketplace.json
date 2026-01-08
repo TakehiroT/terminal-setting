@@ -1,0 +1,15 @@
+{
+  "name": "terminal-setting",
+  "owner": {
+    "name": "takehiro",
+    "email": ""
+  },
+  "plugins": [
+    {
+      "name": "zellij-orchestration",
+      "source": "./plugins/zellij-orchestration",
+      "description": "Zellij multi-pane orchestration skills for parallel development with orchestrator and worker roles",
+      "version": "1.0.0"
+    }
+  ]
+}

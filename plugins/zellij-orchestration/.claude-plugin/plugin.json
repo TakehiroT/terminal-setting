@@ -1,0 +1,6 @@
+{
+  "name": "zellij-orchestration",
+  "version": "1.0.0",
+  "description": "Zellij multi-pane orchestration skills for parallel development. Includes orchestrator for task management and worker for task execution.",
+  "author": "takehiro"
+}
