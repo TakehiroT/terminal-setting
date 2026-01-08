@@ -87,3 +87,30 @@ echo "1. 'ide' で起動"
 echo "2. Alt+3 でImplタブへ移動"
 echo "3. 下部のtriggerペインでEnterを押してスキルを有効化"
 echo "4. triggerペインを閉じる (Ctrl+p x)"
+echo ""
+
+# gtr (Git Worktree Runner) のインストール確認
+echo "=== Git Worktree Runner (推奨) ==="
+if command -v git-gtr >/dev/null 2>&1 || [ -f "$HOME/.local/bin/git-gtr" ]; then
+    echo "gtr: インストール済み"
+else
+    echo "gtrは複数のClaudeが同じファイルを編集するコンフリクトを防ぎます。"
+    echo ""
+    read -p "gtr (Git Worktree Runner) をインストールしますか? (y/N): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo "gtrをインストール中..."
+        curl -fsSL https://raw.githubusercontent.com/coderabbitai/git-worktree-runner/main/install.sh | bash
+        echo ""
+        echo "gtrの使い方:"
+        echo "  git gtr new frontend    # ワークツリー作成"
+        echo "  git gtr ai frontend     # ワークツリーでClaude起動"
+        echo "  git gtr list            # 一覧表示"
+        echo "  git gtr rm frontend     # 削除"
+    else
+        echo "後でインストールする場合:"
+        echo "  curl -fsSL https://raw.githubusercontent.com/coderabbitai/git-worktree-runner/main/install.sh | bash"
+    fi
+fi
+echo ""
+echo "セットアップ完了！"

@@ -46,8 +46,9 @@ Ghostty + Zellij + Yazi を使った IDE 風ターミナル設定
 ├─────────────┼─────────────┤   reviewer   │
 │  backend    │    test     │  (Pane 2)    │
 │  (Pane 3)   │  (Pane 4)   │              │
-└─────────────┴─────────────┴──────────────┘
-       Claude 4ペイン (2x2)    Codex 1ペイン
+├─────────────┴─────────────┴──────────────┤
+│ [trigger] Press ENTER to activate skills │
+└──────────────────────────────────────────┘
 ```
 
 ### 役割分担
@@ -62,17 +63,47 @@ Ghostty + Zellij + Yazi を使った IDE 風ターミナル設定
 
 1. `ide` でZellijを起動
 2. `Alt+3` でImplタブへ移動
-3. 約20秒後に全ペインにスキルが自動適用される
-4. Orchestratorにタスクを依頼
+3. 下部のtriggerペインでEnterを押してスキルを有効化
+4. triggerペインを閉じる (Ctrl+p x)
+5. Orchestratorにタスクを依頼
 
-### スキルのインストール
+## Git Worktree で安全な並列開発（推奨）
 
-Claude Code用のスキルは[tamat-marketplace](https://github.com/TamaT-LLC/tamat-claude-market-place)からインストール:
+複数のClaudeが同じファイルを編集するとコンフリクトが発生します。
+[gtr (Git Worktree Runner)](https://github.com/coderabbitai/git-worktree-runner) を使うと、各Claudeに独立した作業ディレクトリを割り当てられます。
+
+### gtr インストール
 
 ```bash
-# Claude Codeで実行
-/plugin install orchestration@tamat-marketplace
+curl -fsSL https://raw.githubusercontent.com/coderabbitai/git-worktree-runner/main/install.sh | bash
 ```
+
+### gtr 使い方
+
+```bash
+# ワークツリー作成
+git gtr new frontend
+git gtr new backend
+git gtr new test
+
+# Claude Codeを起動
+git gtr config set gtr.ai.default claude
+git gtr ai frontend   # frontendワークツリーでClaude起動
+git gtr ai backend    # backendワークツリーでClaude起動
+
+# 一覧表示
+git gtr list
+
+# 削除
+git gtr rm frontend
+```
+
+### メリット
+
+- `.env`ファイルの自動コピー
+- 作成後のフック（`npm install`等）
+- Claude Code連携組み込み
+- チーム設定の共有（`.gtrconfig`）
 
 ## 必要なツール
 
@@ -83,6 +114,9 @@ brew install zellij yazi neovim bat glow lazygit fd ripgrep
 # AI ツール（オプション）
 # Claude Code: https://claude.ai/download
 # Codex: npm install -g @openai/codex
+
+# Git Worktree Runner（推奨）
+curl -fsSL https://raw.githubusercontent.com/coderabbitai/git-worktree-runner/main/install.sh | bash
 ```
 
 ## インストール
@@ -110,8 +144,8 @@ cp zellij/layouts/ide.kdl ~/.config/zellij/layouts/
 
 # Zellij スクリプト
 mkdir -p ~/.config/zellij/scripts
-cp zellij/scripts/claude-orchestrator.sh ~/.config/zellij/scripts/
-chmod +x ~/.config/zellij/scripts/claude-orchestrator.sh
+cp zellij/scripts/activate-skills.sh ~/.config/zellij/scripts/
+chmod +x ~/.config/zellij/scripts/activate-skills.sh
 
 # Yazi 設定
 mkdir -p ~/.config/yazi/plugins/zellij-nav.yazi
@@ -119,6 +153,15 @@ cp yazi/yazi.toml ~/.config/yazi/
 cp yazi/keymap.toml ~/.config/yazi/
 cp yazi/init.lua ~/.config/yazi/
 cp yazi/plugins/zellij-nav.yazi/main.lua ~/.config/yazi/plugins/zellij-nav.yazi/
+
+# Claude skills
+mkdir -p ~/.claude/skills/orchestrator ~/.claude/skills/worker
+cp claude/skills/orchestrator/SKILL.md ~/.claude/skills/orchestrator/
+cp claude/skills/worker/SKILL.md ~/.claude/skills/worker/
+
+# Codex skills
+mkdir -p ~/.codex/skills/reviewer
+cp codex/skills/reviewer/SKILL.md ~/.codex/skills/reviewer/
 ```
 
 ### 3. シェルエイリアスを追加
@@ -199,16 +242,23 @@ zja       # セッションにアタッチ
 ~/.config/
 ├── zellij/
 │   ├── layouts/
-│   │   └── ide.kdl              # Zellij レイアウト定義
+│   │   └── ide.kdl                # Zellij レイアウト定義
 │   └── scripts/
-│       └── claude-orchestrator.sh # スキル自動起動スクリプト
+│       └── activate-skills.sh     # スキル有効化スクリプト
 └── yazi/
-    ├── yazi.toml                # Yazi 基本設定
-    ├── keymap.toml              # キーマップ設定
-    ├── init.lua                 # 初期化スクリプト
+    ├── yazi.toml                  # Yazi 基本設定
+    ├── keymap.toml                # キーマップ設定
+    ├── init.lua                   # 初期化スクリプト
     └── plugins/
         └── zellij-nav.yazi/
-            └── main.lua         # Zellij 連携プラグイン
+            └── main.lua           # Zellij 連携プラグイン
+
+~/.claude/skills/
+├── orchestrator/SKILL.md        # オーケストレータースキル
+└── worker/SKILL.md              # ワーカースキル
+
+~/.codex/skills/
+└── reviewer/SKILL.md            # レビュアースキル
 ```
 
 ## カスタマイズ
