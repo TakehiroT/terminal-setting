@@ -100,7 +100,12 @@ else
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "gtrをインストール中..."
-        curl -fsSL https://raw.githubusercontent.com/coderabbitai/git-worktree-runner/main/install.sh | bash
+        TEMP_DIR=$(mktemp -d)
+        git clone https://github.com/coderabbitai/git-worktree-runner.git "$TEMP_DIR/git-worktree-runner"
+        cd "$TEMP_DIR/git-worktree-runner"
+        ./install.sh
+        cd -
+        rm -rf "$TEMP_DIR"
         echo ""
         echo "gtrの使い方:"
         echo "  git gtr new frontend    # ワークツリー作成"
@@ -109,7 +114,8 @@ else
         echo "  git gtr rm frontend     # 削除"
     else
         echo "後でインストールする場合:"
-        echo "  curl -fsSL https://raw.githubusercontent.com/coderabbitai/git-worktree-runner/main/install.sh | bash"
+        echo "  git clone https://github.com/coderabbitai/git-worktree-runner.git"
+        echo "  cd git-worktree-runner && ./install.sh"
     fi
 fi
 echo ""
