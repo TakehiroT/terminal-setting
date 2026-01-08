@@ -36,37 +36,45 @@ layout {
 
     // Implementation タブ（Claude 4ペイン + Codex 1ペイン）
     // オーケストレーション用: 左2x2グリッドにClaude、右にCodex
-    // Orchestratorが全ペインにスキルコマンドを順次送信
+    // 全AIはバックグラウンドで起動、スキルはtriggerペインで起動
     tab name="Impl" {
-        pane split_direction="vertical" {
-            // 左側: Claude 2x2 グリッド (70%)
-            pane size="70%" split_direction="horizontal" {
-                // 上段
-                pane size="50%" split_direction="vertical" {
-                    pane size="50%" name="orchestrator" {
-                        command "bash"
-                        args "-c" "$HOME/.config/zellij/scripts/claude-orchestrator.sh"
+        pane split_direction="horizontal" {
+            // メインエリア
+            pane size="95%" split_direction="vertical" {
+                // 左側: Claude 2x2 グリッド (70%)
+                pane size="70%" split_direction="horizontal" {
+                    // 上段
+                    pane size="50%" split_direction="vertical" {
+                        pane size="50%" name="orchestrator" {
+                            command "claude"
+                            args "--dangerously-skip-permissions"
+                        }
+                        pane size="50%" name="frontend" {
+                            command "claude"
+                            args "--dangerously-skip-permissions"
+                        }
                     }
-                    pane size="50%" name="frontend" {
-                        command "claude"
-                        args "--dangerously-skip-permissions"
+                    // 下段
+                    pane size="50%" split_direction="vertical" {
+                        pane size="50%" name="backend" {
+                            command "claude"
+                            args "--dangerously-skip-permissions"
+                        }
+                        pane size="50%" name="test" {
+                            command "claude"
+                            args "--dangerously-skip-permissions"
+                        }
                     }
                 }
-                // 下段
-                pane size="50%" split_direction="vertical" {
-                    pane size="50%" name="backend" {
-                        command "claude"
-                        args "--dangerously-skip-permissions"
-                    }
-                    pane size="50%" name="test" {
-                        command "claude"
-                        args "--dangerously-skip-permissions"
-                    }
+                // 右側: Codex Reviewer (30%)
+                pane size="30%" name="reviewer" {
+                    command "codex"
                 }
             }
-            // 右側: Codex Reviewer (30%)
-            pane size="30%" name="reviewer" {
-                command "codex"
+            // スキル起動トリガー（Enterで起動、完了後に閉じる）
+            pane size="5%" name="trigger" start_suspended=true {
+                command "bash"
+                args "-c" "$HOME/.config/zellij/scripts/activate-skills.sh"
             }
         }
     }

@@ -45,8 +45,8 @@ echo "設定ファイルをコピー中..."
 
 # Zellij
 cp zellij/layouts/ide.kdl ~/.config/zellij/layouts/
-cp zellij/scripts/claude-orchestrator.sh ~/.config/zellij/scripts/
-chmod +x ~/.config/zellij/scripts/claude-orchestrator.sh
+cp zellij/scripts/activate-skills.sh ~/.config/zellij/scripts/
+chmod +x ~/.config/zellij/scripts/activate-skills.sh
 
 # Yazi
 cp yazi/yazi.toml ~/.config/yazi/
@@ -82,4 +82,8 @@ echo "=== AIスキル ==="
 echo "Claude: ~/.claude/skills/ に orchestrator, worker スキルをインストール済み"
 echo "Codex: ~/.codex/skills/ に reviewer スキルをインストール済み"
 echo ""
-echo "ImplタブでAI並列開発を開始するには、'ide' で起動後 Alt+3 でImplタブへ移動してください。"
+echo "=== Implタブの使い方 ==="
+echo "1. 'ide' で起動"
+echo "2. Alt+3 でImplタブへ移動"
+echo "3. 下部のtriggerペインでEnterを押してスキルを有効化"
+echo "4. triggerペインを閉じる (Ctrl+p x)"
