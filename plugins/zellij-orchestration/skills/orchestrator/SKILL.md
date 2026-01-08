@@ -64,8 +64,40 @@ zellij action focus-next-pane && zellij action focus-next-pane && zellij action 
 2. `.spec/<feature-name>/` ディレクトリを作成
 3. `task.md` にタスク定義を書く（役割毎に担当を明記）
 4. 各Workerに上記コマンドで指示を送信
-5. 定期的に各Workerの進捗ファイルを確認
+5. Workerからの完了通知を待つ
 6. `status.md` を更新
+7. **レビューサイクルを実行**（下記参照）
+
+## レビューサイクル
+
+実装完了後、修正指摘がなくなるまで以下を繰り返す:
+
+### 1. Reviewerにレビュー依頼
+
+```bash
+zellij action focus-next-pane && zellij action focus-next-pane && sleep 0.3 && zellij action write-chars 'reviewerスキルを使って、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane && zellij action focus-previous-pane
+```
+
+### 2. レビュー結果を確認
+
+`.spec/<feature>/review.md` を読み、修正指摘の有無を確認
+
+### 3. 修正指摘がある場合
+
+該当するWorkerに修正指示を送信:
+
+```bash
+# 例: Frontendに修正指示
+zellij action focus-next-pane && sleep 0.3 && zellij action write-chars 'workerスキルを使って、review.mdの指摘事項を修正してください。修正内容: [具体的な指摘内容]' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane
+```
+
+### 4. 修正完了後、再度レビュー依頼
+
+手順1に戻り、修正指摘がなくなるまで繰り返す
+
+### 5. レビュー承認
+
+`review.md` に「承認」が記録されたらレビューサイクル完了
 
 ## 注意事項
 

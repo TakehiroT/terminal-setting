@@ -45,8 +45,19 @@ Orchestratorからの指示を受けて、担当部分を実装します。
 ## 完了後
 
 1. 報告ファイルに「完了」を記録
-2. 次の指示を待つ
-3. トークン節約のため、区切りの良いタイミングで `/clear` を実行
+2. **Orchestratorに完了を通知**（以下のコマンドを実行）
+3. 次の指示を待つ
+4. トークン節約のため、区切りの良いタイミングで `/clear` を実行
+
+### Orchestratorへの完了通知コマンド
+
+タスク完了時に以下を実行してOrchestratorに通知:
+
+```bash
+zellij action focus-pane --index 0 && sleep 0.3 && zellij action write-chars '[役割]のタスクが完了しました。.spec/<feature>/[role].mdを確認してください。' && zellij action write 13
+```
+
+※ `[役割]` と `[role]` は自分の担当（frontend/backend/test）に置き換える
 
 ## 注意事項
 
