@@ -1,7 +1,7 @@
 {
   "name": "zellij-orchestration",
-  "version": "1.0.0",
-  "description": "Zellij multi-pane orchestration skills for parallel development. Includes orchestrator for task management and worker for task execution.",
+  "version": "2.0.0",
+  "description": "Zellij orchestration using Task tool for parallel sub-agent execution. Single orchestrator manages Frontend/Backend/Test workers via Task tool.",
   "author": {
     "name": "takehiro"
   }

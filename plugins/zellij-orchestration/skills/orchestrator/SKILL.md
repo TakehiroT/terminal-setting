@@ -1,107 +1,204 @@
 ---
 name: orchestrator
-description: Zellij Implタブでオーケストレーターとして動作。他のWorkerペインに指示を送信し、タスクを管理する。「オーケストレーター」「指揮」「タスク管理」「並列開発」などのリクエスト時に使用。
-allowed-tools: Bash, Read, Write, Glob, Grep
+description: Zellij Implタブでオーケストレーターとして動作。Task toolでサブエージェントを並列起動し、タスクを管理する。「オーケストレーター」「指揮」「タスク管理」「並列開発」などのリクエスト時に使用。
+allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task
 ---
 
 # Orchestrator スキル
 
-あなたはImplタブのオーケストレーターです。
+あなたはImplタブのオーケストレーターです。Task toolを使用してサブエージェント（Worker）を並列起動し、タスクを管理します。
 
 ## ペインレイアウト
 
 ```
-┌─────────────┬─────────────┬──────────────┐
-│ orchestrator│  frontend   │              │
-│  (Pane 0)   │  (Pane 1)   │              │
-├─────────────┼─────────────┤   reviewer   │
-│  backend    │    test     │  (Pane 2)    │
-│  (Pane 3)   │  (Pane 4)   │              │
-└─────────────┴─────────────┴──────────────┘
+┌───────────────────────┬──────────────┐
+│     orchestrator      │   reviewer   │
+│       (Pane 0)        │   (Pane 1)   │
+│                       │              │
+│  Task tool で         │              │
+│  サブエージェント起動 │              │
+└───────────────────────┴──────────────┘
 
-focus-next-pane順序: orchestrator → frontend → reviewer → backend → test
+focus-next-pane順序: orchestrator → reviewer
 ```
 
-## Workerへの指示送信コマンド
+## 利用可能なサブエージェント
 
-各Workerに指示を送るには、以下のBashコマンドを実行してください。
-**重要**: 指示内容には必ず「workerスキルを使って」を含めてスキルを起動させること。
+以下のカスタムサブエージェントが定義済みです（`.claude/agents/`）:
 
-### Frontend (Pane 1) に指示:
+| subagent_type | 用途 |
+|---------------|------|
+| `frontend-worker` | UI/UX、コンポーネント、スタイリング |
+| `backend-worker` | API、ビジネスロジック、データベース |
+| `test-worker` | ユニットテスト、統合テスト、E2E |
+
+## ワークフロー
+
+### 1. タスク受け取り・準備
+
+1. ユーザーからタスクを受け取る
+2. feature名を決定（例: `user-auth`, `dashboard-v2`）
+3. `.spec/<feature>/` ディレクトリを作成
+4. `task.md` にタスク定義を書く（役割毎に担当を明記）
+
+### 2. Git Worktree セットアップ（gtr使用）
+
+**作業開始時に必ず実行**:
 
 ```bash
-zellij action focus-next-pane && sleep 0.3 && zellij action write-chars 'workerスキルを使ってFrontend担当として、〇〇を実装してください。進捗は.spec/<feature>/frontend.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane
+# feature用のworktreeを作成（gtrを使用）
+git gtr new <feature>
 ```
 
-### Reviewer (Codex, Pane 2) に指示:
+worktreeは `.gtr/<feature>/` に作成されます。
 
-```bash
-zellij action focus-next-pane && zellij action focus-next-pane && sleep 0.3 && zellij action write-chars '/review を実行して、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane && zellij action focus-previous-pane
+### 3. サブエージェント起動（並列）
+
+**重要**: 3つのTask toolを**1つのメッセージで同時に呼び出し**て並列実行する。
+
+```
+Task tool 呼び出し (3つ同時):
+
+1. Frontend Worker:
+   subagent_type: "frontend-worker"
+   description: "Frontend実装: <具体的なタスク>"
+   prompt: |
+     ## 作業ディレクトリ
+     .gtr/<feature>
+
+     ## タスク
+     <具体的な実装内容>
+
+     ## 対象ファイル
+     - src/components/...
+     - src/pages/...
+
+2. Backend Worker:
+   subagent_type: "backend-worker"
+   description: "Backend実装: <具体的なタスク>"
+   prompt: |
+     ## 作業ディレクトリ
+     .gtr/<feature>
+
+     ## タスク
+     <具体的な実装内容>
+
+     ## 対象ファイル
+     - src/api/...
+     - src/services/...
+
+3. Test Worker:
+   subagent_type: "test-worker"
+   description: "Test実装: <具体的なタスク>"
+   prompt: |
+     ## 作業ディレクトリ
+     .gtr/<feature>
+
+     ## タスク
+     <具体的なテスト内容>
+
+     ## 対象ファイル
+     - tests/...
+     - __tests__/...
 ```
 
-### Backend (Pane 3) に指示:
+### 4. 完了待機・コミット
+
+全Workerの完了後、worktreeで変更をコミット:
 
 ```bash
-zellij action focus-next-pane && zellij action focus-next-pane && zellij action focus-next-pane && sleep 0.3 && zellij action write-chars 'workerスキルを使ってBackend担当として、〇〇を実装してください。進捗は.spec/<feature>/backend.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane && zellij action focus-previous-pane && zellij action focus-previous-pane
+cd .gtr/<feature>
+git add .
+git commit -m "feat(<feature>): 実装完了"
 ```
 
-### Test (Pane 4) に指示:
+### 5. レビューサイクル
+
+Reviewerペイン（Codex）にレビューを依頼:
 
 ```bash
-zellij action focus-next-pane && zellij action focus-next-pane && zellij action focus-next-pane && zellij action focus-next-pane && sleep 0.3 && zellij action write-chars 'workerスキルを使ってTest担当として、〇〇のテストを作成してください。進捗は.spec/<feature>/test.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane && zellij action focus-previous-pane && zellij action focus-previous-pane && zellij action focus-previous-pane
+zellij action focus-next-pane && sleep 0.3 && zellij action write-chars '/review を実行して、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane
+```
+
+### 6. 修正対応（必要な場合）
+
+修正指摘がある場合、該当Workerで修正:
+
+```
+Task tool 呼び出し:
+  subagent_type: "frontend-worker"
+  description: "Frontend修正: レビュー指摘対応"
+  prompt: |
+    ## 作業ディレクトリ
+    .gtr/<feature>
+
+    ## 修正内容
+    review.mdの以下の指摘を修正してください:
+    - <具体的な指摘内容>
+```
+
+### 7. マージ・クリーンアップ
+
+レビュー承認後:
+
+```bash
+# メインブランチに戻る
+git checkout main
+
+# featureブランチをマージ
+git merge gtr/<feature> --no-edit
+
+# worktreeを削除（gtrを使用）
+git gtr rm <feature>
 ```
 
 ## タスク管理
 
 1. **タスク定義**: `.spec/<feature>/task.md` に全体タスクを書く
-2. **指示送信**: 上記コマンドで各Workerに具体的な指示を送信
-3. **進捗確認**: `.spec/<feature>/[role].md` を定期的に確認
-4. **ステータス更新**: `.spec/<feature>/status.md` に全体進捗を記録
+2. **worktree作成**: `git gtr new <feature>` でworktreeを準備
+3. **並列実行**: Task toolで3つのWorkerを同時起動
+4. **完了待機**: Task toolが自動的に完了を待機
+5. **コミット**: worktreeで変更をコミット
+6. **進捗確認**: `.spec/<feature>/[role].md` を確認
+7. **ステータス更新**: `.spec/<feature>/status.md` に全体進捗を記録
 
-## ワークフロー
+## Git Worktree 構造（gtr使用）
 
-1. ユーザーからタスクを受け取る
-2. `.spec/<feature-name>/` ディレクトリを作成
-3. `task.md` にタスク定義を書く（役割毎に担当を明記）
-4. 各Workerに上記コマンドで指示を送信
-5. Workerからの完了通知を待つ
-6. `status.md` を更新
-7. **レビューサイクルを実行**（下記参照）
-
-## レビューサイクル
-
-実装完了後、修正指摘がなくなるまで以下を繰り返す:
-
-### 1. Reviewerにレビュー依頼
-
-```bash
-zellij action focus-next-pane && zellij action focus-next-pane && sleep 0.3 && zellij action write-chars '/review を実行して、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane && zellij action focus-previous-pane
+```
+project/
+├── .gtr/
+│   └── <feature>/       # feature用の作業領域（全Worker共通）
+├── .spec/
+│   └── <feature>/
+│       ├── task.md      # タスク定義
+│       ├── frontend.md  # Frontend進捗
+│       ├── backend.md   # Backend進捗
+│       ├── test.md      # Test進捗
+│       ├── status.md    # 全体ステータス
+│       └── review.md    # レビュー結果
+└── (通常のプロジェクトファイル)
 ```
 
-### 2. レビュー結果を確認
-
-`.spec/<feature>/review.md` を読み、修正指摘の有無を確認
-
-### 3. 修正指摘がある場合
-
-該当するWorkerに修正指示を送信:
+## gtr コマンドリファレンス
 
 ```bash
-# 例: Frontendに修正指示
-zellij action focus-next-pane && sleep 0.3 && zellij action write-chars 'workerスキルを使って、review.mdの指摘事項を修正してください。修正内容: [具体的な指摘内容]' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane
+git gtr new <name>     # worktree作成
+git gtr list           # 一覧表示
+git gtr rm <name>      # worktree削除
+git gtr ai <name>      # worktreeでClaude起動
 ```
 
-### 4. 修正完了後、再度レビュー依頼
+## Task tool 使用上の注意
 
-手順1に戻り、修正指摘がなくなるまで繰り返す
-
-### 5. レビュー承認
-
-`review.md` に「承認」が記録されたらレビューサイクル完了
+- **並列実行**: 独立したタスクは同時に複数のTask toolを呼び出す
+- **作業ディレクトリ**: 全Workerに同じworktreeパス（`.gtr/<feature>`）を指定
+- **コンフリクト回避**: 同じファイルを複数Workerが編集しないよう分担
+- **依存関係**: Backend完了後にTestを実行する場合は順次呼び出し
+- **エラーハンドリング**: Task toolの戻り値を確認し、失敗時は再実行または報告
 
 ## 注意事項
 
-- 指示内容はシングルクォートで囲む
-- 指示は1回で全て送信（分割しない）
-- 日本語も送信可能
-- Workerが完了したら `/clear` を指示してトークン節約
+- Task toolのプロンプトに**作業ディレクトリを必ず指定**
+- 各Workerの担当範囲を明確に指定（ファイル競合を避ける）
+- 進捗報告ファイルのパスを必ず指定
+- Reviewerへの依頼はzellij actionを使用

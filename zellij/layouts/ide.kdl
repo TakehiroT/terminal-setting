@@ -34,37 +34,16 @@ layout {
         }
     }
 
-    // Implementation タブ（Claude 4ペイン + Codex 1ペイン）
-    // オーケストレーション用: 左2x2グリッドにClaude、右にCodex
-    // 全AIはバックグラウンドで起動、スキルはtriggerペインで起動
+    // Implementation タブ（Claude Orchestrator + Codex Reviewer）
+    // Task toolでサブエージェントを並列実行
     tab name="Impl" {
         pane split_direction="horizontal" {
             // メインエリア
             pane size="95%" split_direction="vertical" {
-                // 左側: Claude 2x2 グリッド (70%)
-                pane size="70%" split_direction="horizontal" {
-                    // 上段
-                    pane size="50%" split_direction="vertical" {
-                        pane size="50%" name="orchestrator" {
-                            command "claude"
-                            args "--dangerously-skip-permissions"
-                        }
-                        pane size="50%" name="frontend" {
-                            command "claude"
-                            args "--dangerously-skip-permissions"
-                        }
-                    }
-                    // 下段
-                    pane size="50%" split_direction="vertical" {
-                        pane size="50%" name="backend" {
-                            command "claude"
-                            args "--dangerously-skip-permissions"
-                        }
-                        pane size="50%" name="test" {
-                            command "claude"
-                            args "--dangerously-skip-permissions"
-                        }
-                    }
+                // 左側: Claude Orchestrator (70%)
+                pane size="70%" name="orchestrator" {
+                    command "claude"
+                    args "--dangerously-skip-permissions"
                 }
                 // 右側: Codex Reviewer (30%)
                 pane size="30%" name="reviewer" {
