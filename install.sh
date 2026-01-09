@@ -93,10 +93,9 @@ echo ""
 echo "=== Implタブの使い方 ==="
 echo "1. 'ide' で起動"
 echo "2. Alt+3 でImplタブへ移動"
-echo "3. スキルは自動で有効化されます（triggerペインも自動で閉じます）"
-echo ""
-echo "=== クリーンアップ＆再起動 ==="
-echo "Ctrl+Shift+R: gtr worktree削除 → main移動 → claude/codex再起動"
+echo "3. triggerペインでEnterを押してスキル有効化"
+echo "4. Orchestratorにタスクを依頼"
+echo "5. 作業完了後、restartペインでEnterを押してクリーンアップ"
 echo ""
 
 # gtr (Git Worktree Runner) のインストール確認
