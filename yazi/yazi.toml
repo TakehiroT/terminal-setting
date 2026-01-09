@@ -2,7 +2,7 @@
 ratio = [1, 2, 0]
 sort_by = "natural"
 sort_dir_first = true
-show_hidden = false
+show_hidden = true
 
 [preview]
 enabled = false
