@@ -48,7 +48,7 @@ theme = "Kanagawa Dragon"
 - **ディレクトリ同期**: Yaziでディレクトリ移動すると、ターミナルも自動で追従
 - **Markdown対応**: `.md`ファイルはglowで読みやすく表示
 - **Git連携**: `g`キーでlazygitを起動
-- **AI並列開発**: Implタブで4つのClaude + Codexによるオーケストレーション
+- **AI並列開発**: ImplタブでClaude Orchestrator + Codex Reviewerによる開発
 
 ## タブ構成
 
