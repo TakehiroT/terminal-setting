@@ -51,13 +51,22 @@ Orchestratorからの指示を受けて、担当部分を実装します。
 
 ### Orchestratorへの完了通知コマンド
 
-タスク完了時に以下を実行してOrchestratorに通知:
+タスク完了時に以下を実行してOrchestratorに通知（役割に応じて選択）:
 
+**Frontend (Pane 1) から:**
 ```bash
-zellij action focus-pane --index 0 && sleep 0.3 && zellij action write-chars '[役割]のタスクが完了しました。.spec/<feature>/[role].mdを確認してください。' && zellij action write 13
+zellij action focus-previous-pane && sleep 0.3 && zellij action write-chars 'Frontendのタスクが完了しました。.spec/<feature>/frontend.mdを確認してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-next-pane
 ```
 
-※ `[役割]` と `[role]` は自分の担当（frontend/backend/test）に置き換える
+**Backend (Pane 3) から:**
+```bash
+zellij action focus-previous-pane && zellij action focus-previous-pane && zellij action focus-previous-pane && sleep 0.3 && zellij action write-chars 'Backendのタスクが完了しました。.spec/<feature>/backend.mdを確認してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-next-pane && zellij action focus-next-pane && zellij action focus-next-pane
+```
+
+**Test (Pane 4) から:**
+```bash
+zellij action focus-previous-pane && zellij action focus-previous-pane && zellij action focus-previous-pane && zellij action focus-previous-pane && sleep 0.3 && zellij action write-chars 'Testのタスクが完了しました。.spec/<feature>/test.mdを確認してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-next-pane && zellij action focus-next-pane && zellij action focus-next-pane && zellij action focus-next-pane
+```
 
 ## 注意事項
 
