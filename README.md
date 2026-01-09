@@ -224,8 +224,7 @@ alias y="yazi"
 ```
 
 **含まれるスキル:**
-- `orchestrator` - タスク分割と進捗管理
-- `worker` - 担当部分の実装
+- `orchestrator` - タスク分割と進捗管理、Task toolでWorker並列実行
 
 ### 5. シェルを再読み込み
 
@@ -310,10 +309,10 @@ codex/skills/
 plugins/                           # Claude Code プラグイン
 └── zellij-orchestration/
     ├── .claude-plugin/
-    │   └── plugin.json
+    │   ├── plugin.json
+    │   └── settings.json          # SubagentStop Hook設定
     └── skills/
-        ├── orchestrator/SKILL.md  # オーケストレータースキル
-        └── worker/SKILL.md        # ワーカースキル
+        └── orchestrator/SKILL.md  # オーケストレータースキル
 ```
 
 ## カスタマイズ
