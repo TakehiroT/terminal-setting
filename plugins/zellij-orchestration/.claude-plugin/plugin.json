@@ -5,5 +5,5 @@
   "author": {
     "name": "takehiro"
   },
-  "hooks": "../hooks/hooks.json"
+  "hooks": "./hooks/hooks.json"
 }
