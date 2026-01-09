@@ -56,37 +56,40 @@ theme = "Kanagawa Dragon"
 |------|------|
 | Code | Yazi + Preview + Terminal |
 | Git | lazygit |
-| Impl | Claude x4 + Codex (オーケストレーション) |
+| Impl | Claude Orchestrator + Codex Reviewer |
 
 ## Impl タブ（AI並列開発）
 
 ```
-┌─────────────┬─────────────┬──────────────┐
-│ orchestrator│  frontend   │              │
-│  (Pane 0)   │  (Pane 1)   │              │
-├─────────────┼─────────────┤   reviewer   │
-│  backend    │    test     │  (Pane 2)    │
-│  (Pane 3)   │  (Pane 4)   │              │
-├─────────────┴─────────────┴──────────────┤
-│ [trigger] Press ENTER to activate skills │
-└──────────────────────────────────────────┘
+┌──────────────────────────┬─────────────┐
+│                          │             │
+│       orchestrator       │   reviewer  │
+│        (Claude)          │   (Codex)   │
+│                          │             │
+├─────────────┬────────────┴─────────────┤
+│  [trigger]  │  [restart]               │
+└─────────────┴──────────────────────────┘
 ```
 
 ### 役割分担
 
-- **Orchestrator**: 全体の指揮、タスク分割、進捗管理
-- **Frontend**: UI/UX実装、コンポーネント作成
-- **Backend**: API、ロジック、データベース
-- **Test**: テスト作成、テスト実行
+- **Orchestrator (Claude)**: 全体の指揮、タスク分割、Task toolでWorker並列実行
 - **Reviewer (Codex)**: コードレビュー、品質チェック
+
+### 下部ボタン
+
+| ボタン | 機能 |
+|--------|------|
+| `trigger` | Enterでスキル送信 (`/orchestrator`) |
+| `restart` | Enterでworktree削除 → main移動 → claude/codex再起動 |
 
 ### 使い方
 
 1. `ide` でZellijを起動
 2. `Alt+3` でImplタブへ移動
-3. 下部のtriggerペインでEnterを押してスキルを有効化
-4. triggerペインを閉じる (Ctrl+p x)
-5. Orchestratorにタスクを依頼
+3. triggerペインでEnterを押してスキルを有効化
+4. Orchestratorにタスクを依頼
+5. 作業完了後、restartペインでEnterを押してクリーンアップ
 
 ## Git Worktree で安全な並列開発（推奨）
 
@@ -291,7 +294,8 @@ zja       # セッションにアタッチ
 │   ├── layouts/
 │   │   └── ide.kdl                # Zellij レイアウト定義
 │   └── scripts/
-│       └── activate-skills.sh     # スキル有効化スクリプト
+│       ├── activate-skills.sh     # スキル送信スクリプト
+│       └── cleanup-restart.sh     # クリーンアップ＆再起動スクリプト
 └── yazi/
     ├── yazi.toml                  # Yazi 基本設定
     ├── keymap.toml                # キーマップ設定

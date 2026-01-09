@@ -48,7 +48,8 @@ echo "設定ファイルをコピー中..."
 # Zellij
 cp zellij/layouts/ide.kdl ~/.config/zellij/layouts/
 cp zellij/scripts/activate-skills.sh ~/.config/zellij/scripts/
-chmod +x ~/.config/zellij/scripts/activate-skills.sh
+cp zellij/scripts/cleanup-restart.sh ~/.config/zellij/scripts/
+chmod +x ~/.config/zellij/scripts/*.sh
 
 # Yazi
 cp yazi/yazi.toml ~/.config/yazi/
@@ -92,8 +93,10 @@ echo ""
 echo "=== Implタブの使い方 ==="
 echo "1. 'ide' で起動"
 echo "2. Alt+3 でImplタブへ移動"
-echo "3. 下部のtriggerペインでEnterを押してスキルを有効化"
-echo "4. triggerペインを閉じる (Ctrl+p x)"
+echo "3. スキルは自動で有効化されます（triggerペインも自動で閉じます）"
+echo ""
+echo "=== クリーンアップ＆再起動 ==="
+echo "Ctrl+Shift+R: gtr worktree削除 → main移動 → claude/codex再起動"
 echo ""
 
 # gtr (Git Worktree Runner) のインストール確認

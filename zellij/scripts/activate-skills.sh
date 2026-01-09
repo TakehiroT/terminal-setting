@@ -1,14 +1,16 @@
 #!/bin/bash
-# 2ペインにスキルコマンドを送信
-# ペイン順序: trigger → orchestrator → reviewer
-echo "スキルを起動中..."
-sleep 2
+# スキル送信スクリプト
+# Enterで実行後、orchestratorにスキルを送信
 
-# 1. Orchestrator (next x1 from trigger)
-zellij action focus-next-pane && sleep 0.3 && zellij action write-chars '/orchestrator' && zellij action write 13
-sleep 0.5
+echo "=== スキル送信 ==="
 
-# 2. Reviewer/Codex (next x1)
-zellij action focus-next-pane && sleep 0.3 && zellij action write-chars '$reviewer' && zellij action write 13
+# orchestratorへ
+zellij action move-focus left
+zellij action move-focus up
+sleep 0.3
+zellij action write-chars '/orchestrator'
+zellij action write 13
+echo "  -> orchestrator: /orchestrator"
 
-echo "完了！このペインを閉じてください (Ctrl+p x)"
+echo ""
+echo "=== 完了 ==="
