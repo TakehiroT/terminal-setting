@@ -15,7 +15,7 @@ description: Zellij Implタブでレビュアーとして動作。Workerの実�
 │       (Claude)        │  (現在位置)  │
 └───────────────────────┴──────────────┘
 
-focus-previous-pane: reviewer → orchestrator
+move-focus: orchestrator ←left / right→ reviewer
 ```
 
 ## 役割
@@ -85,13 +85,13 @@ focus-previous-pane: reviewer → orchestrator
 ### 修正指摘がある場合:
 
 ```bash
-zellij action focus-previous-pane && sleep 0.3 && zellij action write-chars 'レビュー完了。修正指摘があります。.spec/<feature>/review.mdを確認してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-next-pane
+zellij action move-focus left && sleep 0.3 && zellij action write-chars 'レビュー完了。修正指摘があります。.spec/<feature>/review.mdを確認してください。' && zellij action write 13 && sleep 0.3 && zellij action move-focus right
 ```
 
 ### 承認の場合:
 
 ```bash
-zellij action focus-previous-pane && sleep 0.3 && zellij action write-chars 'レビュー承認。.spec/<feature>/review.mdに承認を記録しました。マージを進めてください。' && zellij action write 13 && sleep 0.3 && zellij action focus-next-pane
+zellij action move-focus left && sleep 0.3 && zellij action write-chars 'レビュー承認。.spec/<feature>/review.mdに承認を記録しました。マージを進めてください。' && zellij action write 13 && sleep 0.3 && zellij action move-focus right
 ```
 
 ## 注意事項

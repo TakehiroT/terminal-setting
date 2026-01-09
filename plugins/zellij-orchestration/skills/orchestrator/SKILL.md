@@ -19,7 +19,7 @@ allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task
 │  サブエージェント起動 │              │
 └───────────────────────┴──────────────┘
 
-focus-next-pane順序: orchestrator → reviewer
+move-focus: orchestrator ←left / right→ reviewer
 ```
 
 ## 利用可能なサブエージェント
@@ -117,7 +117,7 @@ git commit -m "feat(<feature>): 実装完了"
 Reviewerペイン（Codex）にレビューを依頼:
 
 ```bash
-zellij action focus-next-pane && sleep 0.3 && zellij action write-chars '/review を実行して、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action focus-previous-pane
+zellij action move-focus right && sleep 0.3 && zellij action write-chars '/review を実行して、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action move-focus left
 ```
 
 ### 6. 修正対応（必要な場合）
