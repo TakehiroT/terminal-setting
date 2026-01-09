@@ -4,6 +4,5 @@
   "description": "Zellij orchestration using Task tool for parallel sub-agent execution. Single orchestrator manages Frontend/Backend/Test workers via Task tool.",
   "author": {
     "name": "takehiro"
-  },
-  "agents": "./agents/"
+  }
 }
