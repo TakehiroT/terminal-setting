@@ -44,6 +44,7 @@ theme = "Kanagawa Dragon"
 
 - **IDE風レイアウト**: 上部にYazi（ビルトインプレビュー付き）、下部にターミナル
 - **画像プレビュー**: 画像/SVG/PDFなどをYazi内で自動プレビュー（chafa使用）
+- **Markdownプレビュー**: glowによるMarkdownレンダリング（キャッシュ付きカスタムプラグイン）
 - **フローティング編集**: Enter/`e`でNeovim、`g`でlazygitをフローティングペインで起動
 - **ディレクトリ同期**: Yaziでディレクトリ移動すると、ターミナルも自動で追従
 - **AI並列開発**: ImplタブでClaude Orchestrator + Codex Reviewerによる開発
@@ -184,10 +185,12 @@ chmod +x ~/.config/zellij/scripts/activate-skills.sh
 
 # Yazi 設定
 mkdir -p ~/.config/yazi/plugins/zellij-nav.yazi
+mkdir -p ~/.config/yazi/plugins/glow.yazi
 cp yazi/yazi.toml ~/.config/yazi/
 cp yazi/keymap.toml ~/.config/yazi/
 cp yazi/init.lua ~/.config/yazi/
 cp yazi/plugins/zellij-nav.yazi/main.lua ~/.config/yazi/plugins/zellij-nav.yazi/
+cp yazi/plugins/glow.yazi/main.lua ~/.config/yazi/plugins/glow.yazi/
 
 # Codex skills
 mkdir -p ~/.codex/skills/reviewer
@@ -262,9 +265,11 @@ ide
 | `d` | ゴミ箱へ |
 | `c` | 新規作成 |
 | `r` | リネーム |
+| `Ctrl+e` | プレビューを下へスクロール |
+| `Ctrl+y` | プレビューを上へスクロール |
 | `q` | 終了 |
 
-**注**: プレビューはYaziのビルトイン機能で自動表示されます（画像/SVG/PDF対応）。
+**注**: プレビューはYaziのビルトイン機能で自動表示されます（画像/SVG/PDF/Markdown対応）。
 
 ### Zellij 操作
 
@@ -303,8 +308,10 @@ zja       # セッションにアタッチ
     ├── keymap.toml                # キーマップ設定
     ├── init.lua                   # 初期化スクリプト
     └── plugins/
-        └── zellij-nav.yazi/
-            └── main.lua           # Zellij 連携プラグイン
+        ├── zellij-nav.yazi/
+        │   └── main.lua           # Zellij 連携プラグイン
+        └── glow.yazi/
+            └── main.lua           # Markdown プレビュープラグイン
 
 codex/skills/
 └── reviewer/SKILL.md              # レビュアースキル (Codex用)

@@ -7,6 +7,11 @@ show_hidden = true
 [preview]
 enabled = true
 
+[plugin]
+prepend_previewers = [
+  { url = "*.md", run = "glow" },
+]
+
 [opener]
 edit = [
     { run = 'zellij action edit -d Right "$@"', block = false, for = "unix" },

@@ -16,6 +16,16 @@ on = "g"
 run = "plugin zellij-nav -- git"
 desc = "右上ペインでlazygit"
 
+[[mgr.prepend_keymap]]
+on = "<C-e>"
+run = "seek 1"
+desc = "プレビューを下へスクロール"
+
+[[mgr.prepend_keymap]]
+on = "<C-y>"
+run = "seek -1"
+desc = "プレビューを上へスクロール"
+
 [manager]
 keymap = [
     # 基本操作
