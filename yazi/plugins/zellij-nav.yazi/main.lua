@@ -19,15 +19,13 @@ local get_cwd_sync = ya.sync(get_cwd)
 
 local function sync_term_dir(cwd)
     local escaped_cwd = cwd:gsub("'", "'\\''")
-    -- preview → term の順でフォーカス移動し、cdを送信して戻る
+    -- Yazi → term の順でフォーカス移動し、cdを送信して戻る
     local cmd = string.format(
-        "zellij action focus-next-pane && " ..  -- Yazi → preview
-        "zellij action focus-next-pane && " ..  -- preview → term
+        "zellij action focus-next-pane && " ..  -- Yazi → term
         "zellij action write 3 && " ..          -- Ctrl+C
         "sleep 0.03 && " ..
         "zellij action write-chars $'cd \\'%s\\'\\n' && " ..
-        "zellij action focus-previous-pane && " ..  -- term → preview
-        "zellij action focus-previous-pane",        -- preview → Yazi
+        "zellij action focus-previous-pane",    -- term → Yazi
         escaped_cwd
     )
     os.execute(cmd .. " &")  -- バックグラウンドで実行
@@ -75,13 +73,9 @@ return {
             if not path then return end
             local escaped_path = path:gsub("'", "'\\''")
 
-            -- nvim終了後に自動でYaziペインにフォーカスを戻す
+            -- フローティングペインでnvimを起動
             cmd = string.format(
-                "zellij action focus-next-pane && " ..
-                "zellij action write 113 && " ..  -- 'q' でページャー終了
-                "zellij action write 3 && " ..    -- Ctrl+C
-                "sleep 0.05 && " ..
-                "zellij action write-chars $'nvim \\'%s\\' && zellij action focus-previous-pane\\n'",
+                "zellij run -f -- nvim '%s'",
                 escaped_path
             )
         elseif action == "git" then
@@ -89,13 +83,9 @@ return {
             if not cwd then return end
             local escaped_cwd = cwd:gsub("'", "'\\''")
 
-            -- lazygit終了後に自動でYaziペインにフォーカスを戻す
+            -- フローティングペインでlazygitを起動
             cmd = string.format(
-                "zellij action focus-next-pane && " ..
-                "zellij action write 113 && " ..  -- 'q' でページャー終了
-                "zellij action write 3 && " ..    -- Ctrl+C
-                "sleep 0.05 && " ..
-                "zellij action write-chars $'cd \\'%s\\' && lazygit && zellij action focus-previous-pane\\n'",
+                "zellij run -f --cwd '%s' -- lazygit",
                 escaped_cwd
             )
         elseif action == "sync" then

@@ -12,18 +12,13 @@ layout {
 
     // メインのコーディングタブ
     tab name="Code" focus=true {
-        pane split_direction="vertical" {
-            // 左側: ファイルツリー (Yazi - プレビューなし)
-            pane size="20%" name="files" focus=true {
+        pane split_direction="horizontal" {
+            // 上部: ファイルツリー (Yazi - ビルトインプレビュー有効)
+            pane size="70%" name="files" focus=true {
                 command "yazi"
             }
-            // 右側: プレビュー/エディタ + ターミナル
-            pane split_direction="horizontal" {
-                // プレビュー/エディタ領域 (batでプレビュー → Enterでneovim)
-                pane size="70%" name="preview"
-                // ターミナル領域
-                pane size="30%" name="term"
-            }
+            // 下部: ターミナル
+            pane size="30%" name="term"
         }
     }
 

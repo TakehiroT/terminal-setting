@@ -28,33 +28,31 @@ theme = "Kanagawa Dragon"
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │  Code  │  Git  │  Impl  │                      (タブバー) │
-├────────────┬────────────────────────────────────────────────────┤
-│            │                                                │
-│   Yazi     │              Preview / Editor                  │
-│  (Files)   │              (bat / nvim)                      │
-│            │                                                │
-│  2階層表示  ├────────────────────────────────────────────────────┤
-│            │                                                │
-│            │              Terminal                          │
-│            │              (auto cd sync)                    │
-│            │                                                │
-└────────────┴────────────────────────────────────────────────────┘
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│   Yazi (ビルトインプレビュー付き)                               │
+│   ファイル一覧 │ 詳細 │ プレビュー（画像/SVG/テキスト）           │
+│                                                                │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│   Terminal (auto cd sync)                                      │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
 ```
 
 ## 機能
 
-- **IDE風レイアウト**: 左にファイルツリー、右上にプレビュー/エディタ、右下にターミナル
-- **Yazi連携**: ファイル選択でプレビュー、Enterでbat表示、`e`でNeovim
+- **IDE風レイアウト**: 上部にYazi（ビルトインプレビュー付き）、下部にターミナル
+- **画像プレビュー**: 画像/SVG/PDFなどをYazi内で自動プレビュー（chafa使用）
+- **フローティング編集**: Enter/`e`でNeovim、`g`でlazygitをフローティングペインで起動
 - **ディレクトリ同期**: Yaziでディレクトリ移動すると、ターミナルも自動で追従
-- **Markdown対応**: `.md`ファイルはglowで読みやすく表示
-- **Git連携**: `g`キーでlazygitを起動
 - **AI並列開発**: ImplタブでClaude Orchestrator + Codex Reviewerによる開発
 
 ## タブ構成
 
 | タブ | 内容 |
 |------|------|
-| Code | Yazi + Preview + Terminal |
+| Code | Yazi（ビルトインプレビュー） + Terminal |
 | Git | lazygit |
 | Impl | Claude Orchestrator + Codex Reviewer |
 
@@ -142,7 +140,10 @@ git gtr rm frontend
 
 ```bash
 # Homebrew でインストール
-brew install zellij yazi neovim bat glow lazygit fd ripgrep
+brew install zellij yazi neovim bat glow lazygit fd ripgrep fzf
+
+# Yaziプレビュー用（画像/SVG/動画等）
+brew install chafa resvg ffmpegthumbnailer unar p7zip
 
 # AI ツール（オプション）
 # Claude Code: https://claude.ai/download
@@ -247,9 +248,9 @@ ide
 | `j/k` | 上下移動 |
 | `h` | 親ディレクトリへ |
 | `l` | ディレクトリに入る |
-| `Enter` | プレビュー (bat/glow) |
-| `e` | Neovim で編集 |
-| `g` | lazygit を起動 |
+| `Enter` | Neovim で編集（フローティングペイン） |
+| `e` | Neovim で編集（フローティングペイン） |
+| `g` | lazygit を起動（フローティングペイン） |
 | `gg` | 先頭へ |
 | `G` | 末尾へ |
 | `Space` | 選択トグル |
@@ -262,6 +263,8 @@ ide
 | `c` | 新規作成 |
 | `r` | リネーム |
 | `q` | 終了 |
+
+**注**: プレビューはYaziのビルトイン機能で自動表示されます（画像/SVG/PDF対応）。
 
 ### Zellij 操作
 
@@ -344,9 +347,9 @@ pane size="60%" name="preview" // プレビューの高さ
 
 ```toml
 [mgr]
-ratio = [1, 2, 0]  # [親, 現在, プレビュー] の比率
+ratio = [1, 3, 4]  # [親, 現在, プレビュー] の比率
 # [0, 1, 0] で1列表示
-# [1, 3, 0] で親を狭く
+# [1, 2, 0] でプレビューなし
 ```
 
 ## License

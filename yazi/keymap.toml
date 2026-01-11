@@ -3,8 +3,8 @@
 # === Zellij連携キー（prepend_keymapで優先） ===
 [[mgr.prepend_keymap]]
 on = "<Enter>"
-run = "plugin zellij-nav -- preview"
-desc = "右上ペインでプレビュー"
+run = "plugin zellij-nav -- edit"
+desc = "右上ペインでNeovim"
 
 [[mgr.prepend_keymap]]
 on = "e"
