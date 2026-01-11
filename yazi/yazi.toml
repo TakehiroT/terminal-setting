@@ -11,6 +11,10 @@ enabled = true
 prepend_previewers = [
   { url = "*.md", run = "glow" },
 ]
+prepend_fetchers = [
+  { id = "git", url = "*", run = "git" },
+  { id = "git", url = "*/", run = "git" },
+]
 
 [opener]
 edit = [
