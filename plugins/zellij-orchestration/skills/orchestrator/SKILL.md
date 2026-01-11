@@ -112,13 +112,20 @@ git add .
 git commit -m "feat(<feature>): 実装完了"
 ```
 
-### 5. レビューサイクル
+### 5. レビューサイクル（必須）
+
+**重要**: 実装完了後、必ずレビューを実行すること。レビューをスキップしてはならない。
 
 Reviewerペイン（Codex）にレビューを依頼:
 
 ```bash
-zellij action move-focus right && sleep 0.3 && zellij action write-chars '/review を実行して、.spec/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action move-focus left
+zellij action move-focus right && sleep 0.3 && zellij action write-chars '/review を実行して、.gtr/<feature>/のコードをレビューしてください。結果は.spec/<feature>/review.mdに報告してください。' && zellij action write 13 && sleep 0.3 && zellij action move-focus left
 ```
+
+**レビュー結果を必ず確認**:
+- `.spec/<feature>/review.md` を読んでレビュー結果を確認
+- 指摘事項がある場合は、セクション6の修正対応を実行
+- 承認（Approve）が得られるまでセクション7に進んではならない
 
 ### 6. 修正対応（必要な場合）
 
@@ -137,16 +144,38 @@ Task tool 呼び出し:
     - <具体的な指摘内容>
 ```
 
-### 7. マージ・クリーンアップ
+### 7. PR作成・マージ（必須）
+
+**重要**: 直接mainにマージしてはならない。必ずPRを作成すること。
 
 レビュー承認後:
 
 ```bash
+# worktreeで変更をpush
+cd .gtr/<feature>
+git push -u origin gtr/<feature>
+
+# PRを作成（gh CLI使用）
+gh pr create --base main --head gtr/<feature> \
+  --title "feat(<feature>): <簡潔な説明>" \
+  --body "## Summary
+- <変更内容1>
+- <変更内容2>
+
+## Review
+レビュー済み: .spec/<feature>/review.md 参照"
+```
+
+PR作成後、PRのURLをユーザーに報告する。
+
+### 8. クリーンアップ
+
+PRがマージされた後（ユーザーの指示を待つ）:
+
+```bash
 # メインブランチに戻る
 git checkout main
-
-# featureブランチをマージ
-git merge gtr/<feature> --no-edit
+git pull
 
 # worktreeを削除（gtrを使用）
 git gtr rm <feature>
@@ -197,6 +226,14 @@ git gtr ai <name>      # worktreeでClaude起動
 - **エラーハンドリング**: Task toolの戻り値を確認し、失敗時は再実行または報告
 
 ## 注意事項
+
+### 絶対に守るべきルール
+
+1. **レビューは必須**: 実装完了後、必ずレビューを実行する。レビューをスキップしてはならない
+2. **直接マージ禁止**: `git merge` で直接mainにマージしてはならない。必ず `gh pr create` でPRを作成する
+3. **承認前のマージ禁止**: レビューで承認（Approve）が得られるまでPRを作成しない
+
+### その他の注意
 
 - Task toolのプロンプトに**作業ディレクトリを必ず指定**
 - 各Workerの担当範囲を明確に指定（ファイル競合を避ける）
