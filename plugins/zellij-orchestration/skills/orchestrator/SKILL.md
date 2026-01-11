@@ -9,9 +9,10 @@ Task toolでサブエージェントを並列起動し、レビュー→PR作成
 
 ## 絶対に守るべきルール
 
-1. **レビュー必須**: 実装完了後、必ずレビューを実行。スキップ禁止
-2. **直接マージ禁止**: `git merge`禁止。必ず`gh pr create`でPR作成
-3. **承認前PR禁止**: レビュー承認（Approve）前にPRを作成しない
+1. **worktree移動必須**: `git gtr new`後、必ず`cd .branches/<feature>`で移動
+2. **レビュー必須**: 実装完了後、必ずレビューを実行。スキップ禁止
+3. **直接マージ禁止**: `git merge`禁止。必ず`gh pr create`でPR作成
+4. **承認前PR禁止**: レビュー承認（Approve）前にPRを作成しない
 
 ## ペインレイアウト
 
@@ -38,34 +39,43 @@ move-focus: left ←→ right
 ```bash
 # feature名を決定し、worktree作成
 git gtr new <feature>
+
+# 重要: worktreeに移動
+cd .branches/<feature>
+
 # .spec/<feature>/task.md にタスク定義を書く
 ```
 
+**注意**: worktree作成後、必ず`.branches/<feature>/`に移動すること。移動しないと元のリポジトリで作業してしまう。
+
 ### 2. サブエージェント並列起動
 
-**3つのTask toolを1つのメッセージで同時に呼び出す**:
+**3つのTask toolを1つのメッセージで同時に呼び出す**。
 
+プロンプトテンプレート: [references/prompts.md](references/prompts.md)
+
+基本構造:
 ```
-subagent_type: "frontend-worker" / "backend-worker" / "test-worker"
-prompt: |
-  ## 作業ディレクトリ
-  .gtr/<feature>
-  ## タスク
-  <具体的な実装内容>
-  ## 対象ファイル
-  <担当ファイルを明記（競合回避）>
+## 作業ディレクトリ
+.branches/<feature>
+## タスク
+<具体的な実装内容>
+## 対象ファイル
+<担当ファイルを明記（競合回避）>
+## 完了条件
+<何をもって完了とするか>
 ```
 
 ### 3. コミット
 
 ```bash
-cd .gtr/<feature> && git add . && git commit -m "feat(<feature>): 実装完了"
+cd .branches/<feature> && git add . && git commit -m "feat(<feature>): 実装完了"
 ```
 
 ### 4. レビュー依頼（必須）
 
 ```bash
-zellij action move-focus right && sleep 0.3 && zellij action write-chars '/review .gtr/<feature>/' && zellij action write 13 && sleep 0.3 && zellij action move-focus left
+zellij action move-focus right && sleep 0.3 && zellij action write-chars '/review .branches/<feature>/' && zellij action write 13 && sleep 0.3 && zellij action move-focus left
 ```
 
 `.spec/<feature>/review.md`を確認し、指摘があれば該当Workerで修正→再レビュー。
@@ -73,9 +83,9 @@ zellij action move-focus right && sleep 0.3 && zellij action write-chars '/revie
 ### 5. PR作成（承認後のみ）
 
 ```bash
-cd .gtr/<feature>
-git push -u origin gtr/<feature>
-gh pr create --base main --head gtr/<feature> --title "feat(<feature>): <説明>" --body "レビュー済み: .spec/<feature>/review.md"
+cd .branches/<feature>
+git push -u origin feature/<feature>
+gh pr create --base main --head feature/<feature> --title "feat(<feature>): <説明>" --body "レビュー済み: .spec/<feature>/review.md"
 ```
 
 PR URLをユーザーに報告。
@@ -89,7 +99,7 @@ git checkout main && git pull && git gtr rm <feature>
 ## ディレクトリ構造
 
 ```
-.gtr/<feature>/    # worktree（全Worker共通）
+.branches/<feature>/    # worktree（全Worker共通）
 .spec/<feature>/   # タスク定義・進捗・レビュー結果
 ```
 
