@@ -8,9 +8,9 @@ echo "=== スキル送信 ==="
 zellij action move-focus left
 zellij action move-focus up
 sleep 0.3
-zellij action write-chars '/orchestrator'
+zellij action write-chars '/zellij-orchestration:orchestrator'
 zellij action write 13
-echo "  -> orchestrator: /orchestrator"
+echo "  -> orchestrator: /zellij-orchestration:orchestrator"
 
 echo ""
 echo "=== 完了 ==="
