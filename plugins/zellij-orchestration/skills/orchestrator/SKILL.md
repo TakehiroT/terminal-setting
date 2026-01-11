@@ -76,8 +76,10 @@ cd .branches/<feature> && git add . && git commit -m "feat(<feature>): 実装完
 ### 4. レビュー依頼（必須）
 
 ```bash
-zellij action move-focus right && sleep 0.3 && zellij action write-chars '/review .branches/<feature>/' && zellij action write 13 && sleep 0.3 && zellij action move-focus left
+zellij action move-focus right && sleep 0.3 && zellij action write-chars 'reviewer skillを使って /review .branches/<feature>/ を行なってください' && zellij action write 13 && sleep 0.3 && zellij action move-focus left
 ```
+
+**注意**: レビュワーペインでは `reviewer` スキルを使って `/review` を実行する。
 
 `.spec/<feature>/review.md`を確認し、指摘があれば該当Workerで修正→再レビュー。
 
