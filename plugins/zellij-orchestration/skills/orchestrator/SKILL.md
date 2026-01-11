@@ -1,6 +1,7 @@
 ---
 name: orchestrator
 description: Zellij Implタブでオーケストレーターとして動作し、Task toolでサブエージェント（frontend-worker, backend-worker, test-worker）を並列起動してタスクを管理する。使用タイミング: (1) 複数のWorkerを並列で動かす実装タスク (2) フロントエンド・バックエンド・テストを同時進行する開発 (3) 「オーケストレーター」「並列開発」「タスク管理」などのリクエスト時
+allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Task
 ---
 
 # Orchestrator
