@@ -10,6 +10,12 @@
       "source": "./plugins/zellij-orchestration",
       "description": "Zellij multi-pane orchestration skills for parallel development with orchestrator and worker roles",
       "version": "1.0.0"
+    },
+    {
+      "name": "tmux-orchestration",
+      "source": "./plugins/tmux-orchestration",
+      "description": "tmux orchestration using Task tool for parallel sub-agent execution. Supports send-keys for direct inter-pane communication.",
+      "version": "1.0.0"
     }
   ]
 }
