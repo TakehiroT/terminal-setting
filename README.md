@@ -140,16 +140,38 @@ git gtr rm frontend
 ## 必要なツール
 
 ```bash
-# Homebrew でインストール
-brew install zellij yazi neovim bat glow lazygit fd ripgrep fzf
+# コアツール
+brew install zellij yazi neovim lazygit
 
-# Yaziプレビュー用（画像/SVG/動画等）
-brew install chafa resvg ffmpegthumbnailer unar p7zip
+# Yazi 必須依存（プラグインで使用）
+brew install glow    # Markdownプレビュー (glow.yazi)
+brew install bat     # テキストプレビュー
+
+# Yazi プレビュー用（オプション - 画像/SVG/動画等）
+brew install chafa              # 画像プレビュー
+brew install resvg              # SVGプレビュー
+brew install ffmpegthumbnailer  # 動画サムネイル
+brew install unar p7zip         # アーカイブプレビュー
+
+# 便利ツール（オプション）
+brew install fd ripgrep fzf
 
 # AI ツール（オプション）
 # Claude Code: https://claude.ai/download
 # Codex: npm install -g @openai/codex
 ```
+
+### Yazi 依存関係一覧
+
+| ツール | 用途 | 必須 |
+|--------|------|------|
+| glow | Markdownプレビュー | ✅ |
+| bat | テキストプレビュー・シンタックスハイライト | ✅ |
+| chafa | 画像プレビュー（PNG, JPG等） | - |
+| resvg | SVGプレビュー | - |
+| ffmpegthumbnailer | 動画サムネイル | - |
+| unar | アーカイブ内容プレビュー | - |
+| p7zip | 7zアーカイブ対応 | - |
 
 ## インストール
 
@@ -170,9 +192,9 @@ chmod +x install.sh
 またはファイルを手動でコピー:
 
 ```bash
-# Ghostty 設定 (macOS)
-mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
-cp ghostty/config "$HOME/Library/Application Support/com.mitchellh.ghostty/"
+# Ghostty 設定
+mkdir -p ~/.config/ghostty
+cp ghostty/config ~/.config/ghostty/
 
 # Zellij レイアウト
 mkdir -p ~/.config/zellij/layouts
@@ -293,10 +315,10 @@ zja       # セッションにアタッチ
 ## ファイル構成
 
 ```
-~/Library/Application Support/com.mitchellh.ghostty/
-└── config                         # Ghostty 設定
-
 ~/.config/
+├── ghostty/
+│   └── config                     # Ghostty 設定
+│
 ├── zellij/
 │   ├── layouts/
 │   │   └── ide.kdl                # Zellij レイアウト定義
