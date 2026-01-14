@@ -46,8 +46,8 @@ layout {
                     args "-c" "while true; do codex; echo '再起動中...'; sleep 1; done"
                 }
             }
-            // 下部ボタン (5%)
-            pane size="5%" split_direction="vertical" {
+            // 下部ボタン (固定3行)
+            pane size=3 split_direction="vertical" {
                 // スキル起動 (Enterで実行)
                 pane name="trigger" start_suspended=true {
                     command "bash"
