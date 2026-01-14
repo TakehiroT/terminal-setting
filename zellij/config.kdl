@@ -1,0 +1,51 @@
+// Zellij 基本設定
+// デフォルトレイアウトをIDEに設定
+default_layout "ide"
+
+// テーマ設定
+theme "default"
+
+// マウスサポート
+mouse_mode true
+
+// コピーモード設定
+copy_on_select true
+
+// セッション名をシリアライズ
+session_serialization true
+
+// ペインフレーム設定
+pane_frames true
+
+// スクロールバッファサイズ
+scroll_buffer_size 10000
+
+// UIの簡略化を無効 (ガイドを常に表示)
+simplified_ui false
+
+// キーバインドはZellijデフォルトを使用
+// 画面下部のステータスバーにガイドが表示されます
+//
+// === 基本操作ガイド ===
+//
+// Ctrl+p  → ペインモード (Pane)
+//           h/j/k/l: 移動, n: 新規(下), r: 新規(右), x: 閉じる, f: 全画面
+//
+// Ctrl+t  → タブモード (Tab)
+//           h/l: 左右移動, n: 新規, x: 閉じる, r: リネーム, 1-9: 番号で移動
+//
+// Ctrl+n  → リサイズモード (Resize)
+//           h/j/k/l: サイズ変更
+//
+// Ctrl+h  → 移動モード (Move)
+//           h/j/k/l: ペインを移動
+//
+// Ctrl+s  → スクロールモード (Scroll)
+//           j/k: スクロール, d/u: 半ページ, PageDown/Up: ページ
+//
+// Ctrl+o  → セッションモード (Session)
+//           d: デタッチ, w: セッションマネージャー
+//
+// Ctrl+q  → Zellijを終了
+//
+// Enter/Esc → ノーマルモードに戻る

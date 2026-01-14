@@ -46,6 +46,7 @@ mkdir -p "$GHOSTTY_CONFIG_DIR"
 echo "設定ファイルをコピー中..."
 
 # Zellij
+cp zellij/config.kdl ~/.config/zellij/
 cp zellij/layouts/ide.kdl ~/.config/zellij/layouts/
 cp zellij/scripts/activate-skills.sh ~/.config/zellij/scripts/
 cp zellij/scripts/cleanup-restart.sh ~/.config/zellij/scripts/
