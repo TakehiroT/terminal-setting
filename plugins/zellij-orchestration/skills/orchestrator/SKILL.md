@@ -32,6 +32,7 @@ move-focus: left ←→ right
 | `frontend-worker` | UI/UX、コンポーネント、スタイリング |
 | `backend-worker` | API、ビジネスロジック、データベース |
 | `test-worker` | ユニットテスト、統合テスト、E2E |
+| `debugger` | UIデバッグ、パフォーマンス分析、ライブラリ調査 |
 
 ## ワークフロー
 
