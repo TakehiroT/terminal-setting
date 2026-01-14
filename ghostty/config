@@ -8,6 +8,9 @@ font-feature = [ "-dlig" ]
 
 # Appearance
 macos-titlebar-style = tabs
+
+# OptionキーをAltとして使う
+macos-option-as-alt = left
 theme = "Kanagawa Dragon"
 
 # Cursor

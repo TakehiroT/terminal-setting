@@ -1,6 +1,10 @@
 # Terminal Setting
 
-Ghostty + Zellij + Yazi を使った IDE 風ターミナル設定
+Ghostty + Zellij/tmux + Yazi を使った IDE 風ターミナル設定
+
+**2つの環境を提供:**
+- `ide` - Zellij版（モダンなUI、初心者向け）
+- `idet` - tmux版（セッション間通信、上級者向け）
 
 ## Ghostty 設定
 
@@ -82,13 +86,50 @@ theme = "Kanagawa Dragon"
 | `trigger` | Enterでスキル送信 (`/orchestrator`) |
 | `restart` | Enterでworktree削除 → main移動 → claude/codex再起動 |
 
-### 使い方
+### 使い方 (Zellij版)
 
 1. `ide` でZellijを起動
 2. `Alt+3` でImplタブへ移動
 3. triggerペインでEnterを押してスキルを有効化
 4. Orchestratorにタスクを依頼
 5. 作業完了後、restartペインでEnterを押してクリーンアップ
+
+## tmux版 Impl タブ
+
+tmux版は `idet` コマンドで起動します。
+
+```
+┌──────────────────────────┬─────────────┐
+│                          │             │
+│       orchestrator       │   reviewer  │
+│        (Claude)          │   (Codex)   │
+│                          │             │
+└──────────────────────────┴─────────────┘
+  Alt+m でアクションメニュー表示
+```
+
+### アクションメニュー (Alt+m)
+
+| キー | 機能 |
+|------|------|
+| `a` | Activate Skills - スキル有効化 |
+| `r` | Restart - claude/codex再起動 |
+| `g` | Go to Git - Gitタブへ移動 |
+| `c` | Cleanup & Restart - worktree削除＆再起動 |
+
+### 使い方 (tmux版)
+
+1. `idet` でtmuxを起動
+2. `Alt+3` でImplタブへ移動
+3. `Alt+m` → `a` でスキルを有効化
+4. Orchestratorにタスクを依頼
+5. 作業完了後、`Alt+m` → `c` でクリーンアップ
+
+### tmux の利点
+
+- **セッション間通信**: `tmux send-keys` で外部からテキスト送信可能
+- **スクリプト連携**: シェルスクリプトからclaude/codexを操作
+- **軽量**: Zellijより低リソース
 
 ## Git Worktree で安全な並列開発（推奨）
 
@@ -303,13 +344,35 @@ ide
 | `Ctrl+p` → `x` | ペインを閉じる |
 | `Ctrl+p` → `Tab` | タブ一覧 |
 
+### tmux 操作
+
+| キー | 動作 |
+|------|------|
+| `Alt+1/2/3/4/5` | タブ切り替え |
+| `Ctrl+p` → `矢印/h/j/k/l` | ペイン移動 |
+| `Ctrl+p` → `n` | 新規ペイン（下） |
+| `Ctrl+p` → `r` | 新規ペイン（右） |
+| `Ctrl+p` → `x` | ペインを閉じる |
+| `Ctrl+t` → `n` | 新規タブ |
+| `Ctrl+n` → `矢印/h/j/k/l` | リサイズ |
+| `Ctrl+s` | スクロール/コピーモード |
+| `Ctrl+q` | セッション終了 |
+| `Alt+m` | アクションメニュー |
+
 ### コマンド
 
 ```bash
-ide       # IDE モードで起動
+# Zellij
+ide       # Zellij IDE モードで起動
 zjkill    # 全セッション削除
 zjls      # セッション一覧
 zja       # セッションにアタッチ
+
+# tmux
+idet      # tmux IDE モードで起動
+tmkill    # サーバー終了
+tmls      # セッション一覧
+tma       # セッションにアタッチ
 ```
 
 ## ファイル構成
@@ -325,26 +388,41 @@ zja       # セッションにアタッチ
 │   └── scripts/
 │       ├── activate-skills.sh     # スキル送信スクリプト
 │       └── cleanup-restart.sh     # クリーンアップ＆再起動スクリプト
+│
+├── tmux/
+│   └── scripts/
+│       ├── ide.sh                 # tmux IDE起動スクリプト
+│       ├── activate-skills.sh     # スキル送信スクリプト
+│       └── cleanup-restart.sh     # クリーンアップ＆再起動スクリプト
+│
 └── yazi/
     ├── yazi.toml                  # Yazi 基本設定
     ├── keymap.toml                # キーマップ設定
     ├── init.lua                   # 初期化スクリプト
     └── plugins/
-        ├── zellij-nav.yazi/
-        │   └── main.lua           # Zellij 連携プラグイン
-        └── glow.yazi/
-            └── main.lua           # Markdown プレビュープラグイン
+        └── zellij-nav.yazi/
+            └── main.lua           # Zellij/tmux 連携プラグイン
+
+~/.tmux.conf                       # tmux 設定
+
+~/.local/bin/
+└── idet                           # tmux IDE起動コマンド
 
 codex/skills/
-└── reviewer/SKILL.md              # レビュアースキル (Codex用)
+├── reviewer/SKILL.md              # Zellij版レビュアースキル
+└── tmux-reviewer/SKILL.md         # tmux版レビュアースキル
 
 plugins/                           # Claude Code プラグイン
-└── zellij-orchestration/
+├── zellij-orchestration/          # Zellij版オーケストレーター
+│   ├── .claude-plugin/
+│   │   └── plugin.json
+│   └── skills/
+│       └── orchestrator/SKILL.md
+└── tmux-orchestration/            # tmux版オーケストレーター
     ├── .claude-plugin/
-    │   ├── plugin.json
-    │   └── settings.json          # SubagentStop Hook設定
+    │   └── plugin.json
     └── skills/
-        └── orchestrator/SKILL.md  # オーケストレータースキル
+        └── orchestrator/SKILL.md
 ```
 
 ## カスタマイズ

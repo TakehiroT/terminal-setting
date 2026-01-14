@@ -11,6 +11,7 @@ echo "必要なツールを確認中..."
 MISSING_TOOLS=()
 
 command -v zellij >/dev/null 2>&1 || MISSING_TOOLS+=("zellij")
+command -v tmux >/dev/null 2>&1 || MISSING_TOOLS+=("tmux")
 command -v yazi >/dev/null 2>&1 || MISSING_TOOLS+=("yazi")
 command -v nvim >/dev/null 2>&1 || MISSING_TOOLS+=("neovim")
 command -v bat >/dev/null 2>&1 || MISSING_TOOLS+=("bat")
@@ -35,8 +36,11 @@ fi
 echo "ディレクトリを作成中..."
 mkdir -p ~/.config/zellij/layouts
 mkdir -p ~/.config/zellij/scripts
+mkdir -p ~/.config/tmux/scripts
+mkdir -p ~/.local/bin
 mkdir -p ~/.config/yazi/plugins
 mkdir -p ~/.codex/skills/reviewer
+mkdir -p ~/.codex/skills/tmux-reviewer
 
 mkdir -p ~/.config/ghostty
 
@@ -50,6 +54,13 @@ cp zellij/scripts/activate-skills.sh ~/.config/zellij/scripts/
 cp zellij/scripts/cleanup-restart.sh ~/.config/zellij/scripts/
 chmod +x ~/.config/zellij/scripts/*.sh
 
+# tmux
+cp tmux/tmux.conf ~/.tmux.conf
+cp tmux/scripts/*.sh ~/.config/tmux/scripts/
+chmod +x ~/.config/tmux/scripts/*.sh
+# idet コマンドをパスに追加
+ln -sf ~/.config/tmux/scripts/ide.sh ~/.local/bin/idet
+
 # Yazi
 cp yazi/yazi.toml ~/.config/yazi/
 cp yazi/keymap.toml ~/.config/yazi/
@@ -58,6 +69,7 @@ cp -r yazi/plugins/* ~/.config/yazi/plugins/
 
 # Codex skills
 cp codex/skills/reviewer/SKILL.md ~/.codex/skills/reviewer/
+cp codex/skills/tmux-reviewer/SKILL.md ~/.codex/skills/tmux-reviewer/
 
 # Ghostty
 cp ghostty/config ~/.config/ghostty/
@@ -74,27 +86,56 @@ echo 'alias zja="zellij attach"'
 echo 'alias zjls="zellij list-sessions"'
 echo 'alias zjkill="zellij delete-all-sessions -f"'
 echo ''
+echo '# tmux (idetは~/.local/bin/にインストール済み)'
+echo 'export PATH="$HOME/.local/bin:$PATH"'
+echo 'alias tma="tmux attach"'
+echo 'alias tmls="tmux list-sessions"'
+echo 'alias tmkill="tmux kill-server"'
+echo ''
 echo '# Yazi'
 echo 'alias y="yazi"'
 echo ""
-echo "その後、'source ~/.bashrc' を実行し、'ide' で起動してください。"
+echo "その後、'source ~/.bashrc' を実行してください。"
+echo ""
+echo "=== 起動方法 ==="
+echo "  ide   : Zellij版IDE環境"
+echo "  idet  : tmux版IDE環境"
 echo ""
 echo "=== Claude Code プラグイン ==="
 echo "Claude Code 内で以下を実行してスキルをインストール:"
 echo "  /plugin marketplace add TakehiroT/terminal-setting"
+echo ""
+echo "  # Zellij版"
 echo "  /plugin install zellij-orchestration@terminal-setting"
 echo ""
-echo "含まれるスキル: orchestrator"
+echo "  # tmux版"
+echo "  /plugin install tmux-orchestration@terminal-setting"
+echo ""
+echo "含まれるスキル: orchestrator (両方同じスキル名)"
 echo ""
 echo "=== Codex スキル ==="
-echo "Codex: ~/.codex/skills/ に reviewer スキルをインストール済み"
+echo "Codex: ~/.codex/skills/ にスキルをインストール済み"
+echo "  - reviewer      : Zellij版レビュアー"
+echo "  - tmux-reviewer : tmux版レビュアー"
 echo ""
-echo "=== Implタブの使い方 ==="
+echo "=== Implタブの使い方 (Zellij: ide) ==="
 echo "1. 'ide' で起動"
 echo "2. Alt+3 でImplタブへ移動"
 echo "3. triggerペインでEnterを押してスキル有効化"
 echo "4. Orchestratorにタスクを依頼"
 echo "5. 作業完了後、restartペインでEnterを押してクリーンアップ"
+echo ""
+echo "=== Implタブの使い方 (tmux: idet) ==="
+echo "1. 'idet' で起動"
+echo "2. Alt+3 でImplタブへ移動"
+echo "3. Alt+m でアクションメニューを表示:"
+echo "   a: Activate Skills - スキル有効化"
+echo "   r: Restart - claude/codex再起動"
+echo "   g: Go to Git - Gitタブへ移動"
+echo "   c: Cleanup & Restart - worktree削除＆再起動"
+echo "4. 外部からテキスト送信 (tmux send-keys):"
+echo "   tmux send-keys -t ide:Impl.1 'メッセージ'"
+echo "   tmux send-keys -t ide:Impl.1 Enter"
 echo ""
 
 # gtr (Git Worktree Runner) のインストール確認
