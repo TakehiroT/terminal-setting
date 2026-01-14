@@ -286,9 +286,14 @@ alias y="yazi"
 # マーケットプレイスを追加
 /plugin marketplace add TakehiroT/terminal-setting
 
-# プラグインをインストール
-/plugin install zellij-orchestration@terminal-setting
+# プラグインをインストール (どちらか選択)
+/plugin install zellij-orchestration@terminal-setting   # Zellij版
+/plugin install tmux-orchestration@terminal-setting     # tmux版
 ```
+
+**含まれるプラグイン:**
+- `zellij-orchestration` - Zellij版オーケストレーター
+- `tmux-orchestration` - tmux版オーケストレーター（send-keys対応）
 
 **含まれるスキル:**
 - `orchestrator` - タスク分割と進捗管理、Task toolでWorker並列実行
