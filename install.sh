@@ -38,9 +38,7 @@ mkdir -p ~/.config/zellij/scripts
 mkdir -p ~/.config/yazi/plugins
 mkdir -p ~/.codex/skills/reviewer
 
-# Ghostty設定ディレクトリ (macOS)
-GHOSTTY_CONFIG_DIR="$HOME/Library/Application Support/com.mitchellh.ghostty"
-mkdir -p "$GHOSTTY_CONFIG_DIR"
+mkdir -p ~/.config/ghostty
 
 # ファイルコピー
 echo "設定ファイルをコピー中..."
@@ -62,7 +60,7 @@ cp -r yazi/plugins/* ~/.config/yazi/plugins/
 cp codex/skills/reviewer/SKILL.md ~/.codex/skills/reviewer/
 
 # Ghostty
-cp ghostty/config "$GHOSTTY_CONFIG_DIR/"
+cp ghostty/config ~/.config/ghostty/
 
 echo ""
 echo "=== インストール完了 ==="
