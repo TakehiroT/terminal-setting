@@ -77,7 +77,8 @@ cd .branches/<feature> && git add . && git commit -m "feat(<feature>): 実装完
 ### 4. レビュー依頼（必須）
 
 ```bash
-zellij action move-focus right && sleep 0.3 && zellij action write-chars 'reviewer skillを使って /review .branches/<feature>/ を行なってください' && zellij action write 13 && sleep 0.3 && zellij action move-focus left
+# 注意: Codex内から実行する場合は -s "$ZELLIJ_SESSION_NAME" が必要
+zellij -s "$ZELLIJ_SESSION_NAME" action move-focus right && sleep 0.3 && zellij -s "$ZELLIJ_SESSION_NAME" action write-chars 'reviewer skillを使って /review .branches/<feature>/ を行なってください' && zellij -s "$ZELLIJ_SESSION_NAME" action write 13 && sleep 0.3 && zellij -s "$ZELLIJ_SESSION_NAME" action move-focus left
 ```
 
 **注意**: レビュワーペインでは `reviewer` スキルを使って `/review` を実行する。
