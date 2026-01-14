@@ -35,7 +35,7 @@ fi
 echo "ディレクトリを作成中..."
 mkdir -p ~/.config/zellij/layouts
 mkdir -p ~/.config/zellij/scripts
-mkdir -p ~/.config/yazi/plugins/zellij-nav.yazi
+mkdir -p ~/.config/yazi/plugins
 mkdir -p ~/.codex/skills/reviewer
 
 # Ghostty設定ディレクトリ (macOS)
@@ -55,7 +55,7 @@ chmod +x ~/.config/zellij/scripts/*.sh
 cp yazi/yazi.toml ~/.config/yazi/
 cp yazi/keymap.toml ~/.config/yazi/
 cp yazi/init.lua ~/.config/yazi/
-cp yazi/plugins/zellij-nav.yazi/main.lua ~/.config/yazi/plugins/zellij-nav.yazi/
+cp -r yazi/plugins/* ~/.config/yazi/plugins/
 
 # Codex skills
 cp codex/skills/reviewer/SKILL.md ~/.codex/skills/reviewer/
