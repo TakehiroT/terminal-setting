@@ -67,7 +67,8 @@ cp yazi/keymap.toml ~/.config/yazi/
 cp yazi/init.lua ~/.config/yazi/
 cp -r yazi/plugins/* ~/.config/yazi/plugins/
 
-# Codex skills
+# Codex config & skills
+cp codex/config.json ~/.codex/
 cp codex/skills/reviewer/SKILL.md ~/.codex/skills/reviewer/
 cp codex/skills/tmux-reviewer/SKILL.md ~/.codex/skills/tmux-reviewer/
 
