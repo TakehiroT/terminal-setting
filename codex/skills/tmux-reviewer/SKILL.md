@@ -80,25 +80,29 @@ tmux send-keys -t ide:Impl.2  # reviewer（自分）
 4. レビュー結果を `review.md` に記録
 5. **Orchestratorに完了を報告**（下記コマンド使用）
 
-## Orchestratorへの完了報告
+## Orchestratorへの完了報告（必須）
 
-レビュー完了後、以下のコマンドでOrchestratorに報告:
+**レビュー完了後、必ずtmux send-keysでOrchestratorに報告すること。**
 
 ### 修正指摘がある場合:
 
 ```bash
-tmux send-keys -t ide:Impl.1 'レビュー完了。修正指摘があります。.spec/<feature>/review.mdを確認してください。' Enter
+tmux send-keys -t ide:Impl.1 -l '[REVIEW] 修正指摘あり: .spec/<feature>/review.md を確認してください'
+tmux send-keys -t ide:Impl.1 Enter
 ```
 
 ### 承認の場合:
 
 ```bash
-tmux send-keys -t ide:Impl.1 'レビュー承認。.spec/<feature>/review.mdに承認を記録しました。マージを進めてください。' Enter
+tmux send-keys -t ide:Impl.1 -l '[REVIEW] 承認: .spec/<feature>/review.md に記録済み。PRを作成してください'
+tmux send-keys -t ide:Impl.1 Enter
 ```
+
+**注意**: Claude（Orchestrator）への送信は `Enter` で送信される。`-l` オプションでリテラル送信。
 
 ## 注意事項
 
 - 建設的なフィードバックを心がける
 - 重大な問題は優先的に報告
 - 良い実装は積極的に褒める
-- **レビュー完了後は必ずOrchestratorに報告すること**
+- **レビュー完了後は必ずOrchestratorに報告すること（報告しないとワークフローが止まる）**
