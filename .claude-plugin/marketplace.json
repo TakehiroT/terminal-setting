@@ -15,7 +15,7 @@
       "name": "tmux-orchestration",
       "source": "./plugins/tmux-orchestration",
       "description": "tmux orchestration using Task tool for parallel sub-agent execution. Supports send-keys for direct inter-pane communication.",
-      "version": "1.0.0"
+      "version": "1.0.1"
     }
   ]
 }
