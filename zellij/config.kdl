@@ -5,6 +5,11 @@ default_layout "ide"
 // キーバインド設定
 keybinds {
     shared {
+        // Alt+1/2/3: タブ切り替え
+        bind "Alt 1" { GoToTab 1; }
+        bind "Alt 2" { GoToTab 2; }
+        bind "Alt 3" { GoToTab 3; }
+
         // Alt+m: アクションメニュー (tmuxと同じ)
         bind "Alt m" {
             Run "bash" "-c" "~/.config/zellij/scripts/menu.sh" {
@@ -60,6 +65,9 @@ simplified_ui false
 //           d: デタッチ, w: セッションマネージャー
 //
 // Ctrl+q  → Zellijを終了
+//
+// Alt+1/2/3 → タブ切り替え (カスタム)
+//           1: Code, 2: Git, 3: Impl
 //
 // Alt+m   → アクションメニュー (カスタム)
 //           Activate Skills, Restart, Git, Cleanup
