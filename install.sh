@@ -55,6 +55,7 @@ cp zellij/config.kdl ~/.config/zellij/
 cp zellij/layouts/ide.kdl ~/.config/zellij/layouts/
 cp zellij/scripts/activate-skills.sh ~/.config/zellij/scripts/
 cp zellij/scripts/cleanup-restart.sh ~/.config/zellij/scripts/
+cp zellij/scripts/menu.sh ~/.config/zellij/scripts/
 chmod +x ~/.config/zellij/scripts/*.sh
 
 # tmux

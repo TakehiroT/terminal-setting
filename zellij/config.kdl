@@ -2,6 +2,19 @@
 // デフォルトレイアウトをIDEに設定
 default_layout "ide"
 
+// キーバインド設定
+keybinds {
+    shared {
+        // Alt+m: アクションメニュー (tmuxと同じ)
+        bind "Alt m" {
+            Run "bash" "-c" "~/.config/zellij/scripts/menu.sh" {
+                floating true
+                close_on_exit false
+            }
+        }
+    }
+}
+
 // テーマ設定
 theme "default"
 
@@ -47,5 +60,8 @@ simplified_ui false
 //           d: デタッチ, w: セッションマネージャー
 //
 // Ctrl+q  → Zellijを終了
+//
+// Alt+m   → アクションメニュー (カスタム)
+//           Activate Skills, Restart, Git, Cleanup
 //
 // Enter/Esc → ノーマルモードに戻る
