@@ -22,9 +22,10 @@ function Status:cheatsheet()
     { key = "p", desc = "paste" },
     { key = "d", desc = "del" },
     { key = "r", desc = "rename" },
-    { key = "a", desc = "new" },
+    { key = "c", desc = "new" },
     { key = "SPC", desc = "select" },
-    { key = "/", desc = "search" },
+    { key = "/", desc = "find" },
+    { key = "fg", desc = "grep" },
     { key = "O", desc = "Finder" },
   }
 

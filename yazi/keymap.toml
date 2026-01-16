@@ -26,6 +26,17 @@ on = "<C-y>"
 run = "seek -1"
 desc = "プレビューを上へスクロール"
 
+# fzf連携検索 (VSCode風UI)
+[[mgr.prepend_keymap]]
+on = [ "f", "g" ]
+run = "plugin fg"
+desc = "全文検索 (fzf+rg)"
+
+[[mgr.prepend_keymap]]
+on = [ "f", "f" ]
+run = "plugin fg -- fzf"
+desc = "ファイル名検索 (fzf)"
+
 [manager]
 keymap = [
     # 基本操作
@@ -71,10 +82,10 @@ keymap = [
     { on = [ "." ], run = "hidden toggle", desc = "隠しファイル切り替え" },
 
     # 検索
-    { on = [ "/" ], run = "search fd", desc = "検索" },
+    { on = [ "/" ], run = "search fd", desc = "ファイル名検索" },
     { on = [ "n" ], run = "search_next", desc = "次の検索結果" },
     { on = [ "N" ], run = "search_prev", desc = "前の検索結果" },
-    { on = [ "f" ], run = "filter --smart", desc = "フィルター" },
+    { on = [ "<C-f>" ], run = "filter --smart", desc = "フィルター" },
 
     # ソート
     { on = [ "s", "n" ], run = "sort natural --reverse=no", desc = "名前順" },

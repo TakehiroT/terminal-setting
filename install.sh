@@ -17,6 +17,9 @@ command -v nvim >/dev/null 2>&1 || MISSING_TOOLS+=("neovim")
 command -v bat >/dev/null 2>&1 || MISSING_TOOLS+=("bat")
 command -v glow >/dev/null 2>&1 || MISSING_TOOLS+=("glow")
 command -v lazygit >/dev/null 2>&1 || MISSING_TOOLS+=("lazygit")
+command -v fzf >/dev/null 2>&1 || MISSING_TOOLS+=("fzf")
+command -v rg >/dev/null 2>&1 || MISSING_TOOLS+=("ripgrep")
+command -v fd >/dev/null 2>&1 || MISSING_TOOLS+=("fd")
 
 if [ ${#MISSING_TOOLS[@]} -ne 0 ]; then
     echo "以下のツールがインストールされていません:"
@@ -66,6 +69,13 @@ cp yazi/yazi.toml ~/.config/yazi/
 cp yazi/keymap.toml ~/.config/yazi/
 cp yazi/init.lua ~/.config/yazi/
 cp -r yazi/plugins/* ~/.config/yazi/plugins/
+
+# fg.yazi プラグイン（fzf+rg全文検索）
+if [ ! -d ~/.config/yazi/plugins/fg.yazi ]; then
+    echo "fg.yazi プラグインをインストール中..."
+    git clone --depth 1 https://github.com/DreamMaoMao/fg.yazi.git \
+        ~/.config/yazi/plugins/fg.yazi
+fi
 
 # Codex config & skills
 cp codex/config.json ~/.codex/

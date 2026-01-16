@@ -194,8 +194,8 @@ brew install resvg              # SVGプレビュー
 brew install ffmpegthumbnailer  # 動画サムネイル
 brew install unar p7zip         # アーカイブプレビュー
 
-# 便利ツール（オプション）
-brew install fd ripgrep fzf
+# Yazi 検索用（必須 - fg.yaziプラグインで使用）
+brew install fzf ripgrep fd
 
 # AI ツール（オプション）
 # Claude Code: https://claude.ai/download
@@ -208,6 +208,9 @@ brew install fd ripgrep fzf
 |--------|------|------|
 | glow | Markdownプレビュー | ✅ |
 | bat | テキストプレビュー・シンタックスハイライト | ✅ |
+| fzf | ファジー検索UI（fg.yaziプラグイン） | ✅ |
+| ripgrep | 全文検索（fg.yaziプラグイン） | ✅ |
+| fd | ファイル名検索（fg.yaziプラグイン） | ✅ |
 | chafa | 画像プレビュー（PNG, JPG等） | - |
 | resvg | SVGプレビュー | - |
 | ffmpegthumbnailer | 動画サムネイル | - |
@@ -325,7 +328,9 @@ ide
 | `gg` | 先頭へ |
 | `G` | 末尾へ |
 | `Space` | 選択トグル |
-| `/` | 検索 |
+| `/` | ファイル名検索 |
+| `f` → `g` | **全文検索 (fzf UI)** - VSCode風 |
+| `f` → `f` | **ファイル名検索 (fzf UI)** - VSCode風 |
 | `.` | 隠しファイル切り替え |
 | `y` | コピー |
 | `x` | カット |
@@ -335,9 +340,18 @@ ide
 | `r` | リネーム |
 | `Ctrl+e` | プレビューを下へスクロール |
 | `Ctrl+y` | プレビューを上へスクロール |
+| `Ctrl+f` | フィルター |
 | `q` | 終了 |
 
 **注**: プレビューはYaziのビルトイン機能で自動表示されます（画像/SVG/PDF/Markdown対応）。
+
+### VSCode風 検索 (fg.yazi プラグイン)
+
+`f` → `g` で全文検索すると、fzfのインタラクティブUIが表示されます：
+
+- 入力した文字列を含むファイルがリアルタイムで絞り込み
+- プレビューでマッチ行がハイライト表示
+- Enterでファイルに移動またはNeovimで開く
 
 ### Zellij 操作
 
@@ -405,8 +419,9 @@ tma       # セッションにアタッチ
     ├── keymap.toml                # キーマップ設定
     ├── init.lua                   # 初期化スクリプト
     └── plugins/
-        └── zellij-nav.yazi/
-            └── main.lua           # Zellij/tmux 連携プラグイン
+        ├── zellij-nav.yazi/
+        │   └── main.lua           # Zellij/tmux 連携プラグイン
+        └── fg.yazi/               # fzf+rg全文検索 (外部プラグイン)
 
 ~/.tmux.conf                       # tmux 設定
 
