@@ -81,9 +81,8 @@ tmux send-keysでcodexペインにメッセージを送信:
 
 ```bash
 # セッション名は idet で起動した場合 "ide"
-# Codexは Escape → Enter で送信
-tmux send-keys -t ide:Impl.2 -l 'tmux-reviewer skillを使って /review .branches/<feature>/ を行なってください'
-tmux send-keys -t ide:Impl.2 Escape Enter
+# Codexは Escape → Enter で送信（間にsleepを入れる）
+tmux send-keys -t ide:Impl.2 -l 'tmux-reviewer skillを使って /review .branches/<feature>/ を行なってください' && sleep 0.1 && tmux send-keys -t ide:Impl.2 Escape && sleep 0.1 && tmux send-keys -t ide:Impl.2 Enter
 ```
 
 **注意**: レビュワーペインでは `tmux-reviewer` スキルを使って `/review` を実行する。
@@ -127,13 +126,12 @@ git gtr list         # 一覧表示
 # claudeペインにメッセージ送信（Enter で送信）
 tmux send-keys -t ide:Impl.1 'メッセージ' Enter
 
-# codex（レビュワー）ペインにメッセージ送信（Escape → Enter で送信）
-tmux send-keys -t ide:Impl.2 -l 'メッセージ'
-tmux send-keys -t ide:Impl.2 Escape Enter
+# codex（レビュワー）ペインにメッセージ送信（Escape → Enter で送信、間にsleepを入れる）
+tmux send-keys -t ide:Impl.2 -l 'メッセージ' && sleep 0.1 && tmux send-keys -t ide:Impl.2 Escape && sleep 0.1 && tmux send-keys -t ide:Impl.2 Enter
 
 # セッション名がカスタムの場合
 tmux send-keys -t <session>:Impl.1 'メッセージ' Enter
-tmux send-keys -t <session>:Impl.2 -l 'メッセージ' && tmux send-keys -t <session>:Impl.2 Escape Enter
+tmux send-keys -t <session>:Impl.2 -l 'メッセージ' && sleep 0.1 && tmux send-keys -t <session>:Impl.2 Escape && sleep 0.1 && tmux send-keys -t <session>:Impl.2 Enter
 ```
 
-**注意**: Codexは `Escape` → `Enter` で送信。`-l` オプションでリテラル送信。
+**注意**: Codexは `Escape` → `Enter` で送信。間に `sleep 0.1` を入れないと改行になる場合がある。`-l` オプションでリテラル送信。
