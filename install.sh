@@ -70,7 +70,17 @@ cp yazi/keymap.toml ~/.config/yazi/
 cp yazi/init.lua ~/.config/yazi/
 cp -r yazi/plugins/* ~/.config/yazi/plugins/
 
-# fg.yazi プラグイン（fzf+rg全文検索）
+# 外部プラグイン
+# git.yazi（Gitステータス表示）
+if [ ! -d ~/.config/yazi/plugins/git.yazi ]; then
+    echo "git.yazi プラグインをインストール中..."
+    TEMP_DIR=$(mktemp -d)
+    git clone --depth 1 https://github.com/yazi-rs/plugins.git "$TEMP_DIR"
+    mv "$TEMP_DIR/git.yazi" ~/.config/yazi/plugins/
+    rm -rf "$TEMP_DIR"
+fi
+
+# fg.yazi（fzf+rg全文検索）
 if [ ! -d ~/.config/yazi/plugins/fg.yazi ]; then
     echo "fg.yazi プラグインをインストール中..."
     git clone --depth 1 https://github.com/DreamMaoMao/fg.yazi.git \

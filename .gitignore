@@ -1,2 +1,3 @@
-# 外部プラグイン（install.shでクローン）
+# 外部プラグイン（install.shでインストール）
 yazi/plugins/fg.yazi/
+yazi/plugins/git.yazi/

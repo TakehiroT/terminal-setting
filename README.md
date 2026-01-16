@@ -419,9 +419,10 @@ tma       # セッションにアタッチ
     ├── keymap.toml                # キーマップ設定
     ├── init.lua                   # 初期化スクリプト
     └── plugins/
-        ├── zellij-nav.yazi/
-        │   └── main.lua           # Zellij/tmux 連携プラグイン
-        └── fg.yazi/               # fzf+rg全文検索 (外部プラグイン)
+        ├── zellij-nav.yazi/       # Zellij/tmux 連携プラグイン
+        ├── glow.yazi/             # Markdownプレビュー
+        ├── git.yazi/              # Gitステータス (外部: yazi-rs/plugins)
+        └── fg.yazi/               # fzf+rg全文検索 (外部: DreamMaoMao/fg.yazi)
 
 ~/.tmux.conf                       # tmux 設定
 
