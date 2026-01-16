@@ -31,33 +31,18 @@ layout {
 
     // Implementation タブ（Claude Orchestrator + Codex Reviewer）
     // Task toolでサブエージェントを並列実行
+    // Alt+m でアクションメニュー (Activate Skills, Restart, etc.)
     tab name="Impl" {
-        pane split_direction="horizontal" {
-            // メインエリア (95%)
-            pane size="95%" split_direction="vertical" {
-                // 左側: Claude Orchestrator (70%) - exitで自動再起動
-                pane size="70%" name="orchestrator" {
-                    command "bash"
-                    args "-c" "while true; do claude; echo '再起動中...'; sleep 1; done"
-                }
-                // 右側: Codex Reviewer (30%) - exitで自動再起動
-                pane size="30%" name="reviewer" {
-                    command "bash"
-                    args "-c" "while true; do codex; echo '再起動中...'; sleep 1; done"
-                }
+        pane split_direction="vertical" {
+            // 左側: Claude Orchestrator (70%) - exitで自動再起動
+            pane size="70%" name="orchestrator" {
+                command "bash"
+                args "-c" "while true; do claude; echo '再起動中...'; sleep 1; done"
             }
-            // 下部ボタン (固定3行)
-            pane size=3 split_direction="vertical" {
-                // スキル起動 (Enterで実行)
-                pane name="trigger" start_suspended=true {
-                    command "bash"
-                    args "-c" "$HOME/.config/zellij/scripts/activate-skills.sh"
-                }
-                // リスタート (Enterで実行)
-                pane name="restart" start_suspended=true {
-                    command "bash"
-                    args "-c" "$HOME/.config/zellij/scripts/cleanup-restart.sh"
-                }
+            // 右側: Codex Reviewer (30%) - exitで自動再起動
+            pane size="30%" name="reviewer" {
+                command "bash"
+                args "-c" "while true; do codex; echo '再起動中...'; sleep 1; done"
             }
         }
     }

@@ -54,9 +54,7 @@ echo "claude/codexを再起動中..."
 zellij action go-to-tab-name "Impl"
 sleep 0.2
 
-# orchestratorペインへ移動（左上: まず上に移動してから左に移動）
-zellij action move-focus up
-zellij action move-focus up
+# orchestratorペインへ移動（左）
 zellij action move-focus left
 sleep 0.2
 

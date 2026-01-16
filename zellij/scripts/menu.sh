@@ -32,9 +32,7 @@ case "$selected" in
         zellij action go-to-tab-name "Impl"
         sleep 0.2
 
-        # orchestratorペインへ移動（左上）
-        zellij action move-focus up
-        zellij action move-focus up
+        # orchestratorペインへ移動（左）
         zellij action move-focus left
         sleep 0.2
 
@@ -43,7 +41,7 @@ case "$selected" in
         zellij action write 13
         sleep 0.3
 
-        # reviewerへ移動（右へ）
+        # reviewerへ移動（右）
         zellij action move-focus right
         sleep 0.2
 
