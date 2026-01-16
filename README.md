@@ -480,6 +480,26 @@ ratio = [1, 3, 4]  # [親, 現在, プレビュー] の比率
 # [1, 2, 0] でプレビューなし
 ```
 
+### Yazi git プラグインの修正
+
+デフォルトの git.yazi プラグインでは、ディレクトリに下層ファイルの変更状態が表示されません。
+以下の修正で、サブディレクトリ内のファイルに変更がある場合に親ディレクトリにも変更マークが表示されるようになります。
+
+`~/.config/yazi/plugins/git.yazi/main.lua` の `fetch` 関数内:
+
+```lua
+-- 修正前（条件付き）
+if job.files[1].cha.is_dir then
+    ya.dict_merge(changed, bubble_up(changed))
+end
+
+-- 修正後（常に実行）
+-- Always bubble up changes from nested files to parent directories
+ya.dict_merge(changed, bubble_up(changed))
+```
+
+**注意**: `ya pkg upgrade git` でプラグインを更新すると上書きされるため、再度修正が必要です。
+
 ## License
 
 MIT
