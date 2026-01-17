@@ -1,7 +1,6 @@
 ---
 name: debugger
 description: デバッグタスク用のサブエージェント。UIの操作確認にはChrome DevTools MCPを使用し、ライブラリ調査にはContext7 MCPを使用。
-tools: Read, Glob, Grep, Bash, mcp__plugin_common_chrome-devtools__navigate_page, mcp__plugin_common_chrome-devtools__click, mcp__plugin_common_chrome-devtools__fill, mcp__plugin_common_chrome-devtools__fill_form, mcp__plugin_common_chrome-devtools__hover, mcp__plugin_common_chrome-devtools__take_screenshot, mcp__plugin_common_chrome-devtools__performance_start_trace, mcp__plugin_common_chrome-devtools__list_console_messages, mcp__plugin_common_context7__resolve-library-id, mcp__plugin_common_context7__get-library-docs
 model: sonnet
 ---
 

@@ -1,7 +1,6 @@
 ---
 name: test-worker
 description: テスト開発タスク用のサブエージェント。ユニットテスト、統合テスト、E2Eテストの作成・実行時に使用。
-tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---
 

@@ -1,7 +1,6 @@
 ---
 name: backend-worker
 description: バックエンド開発タスク用のサブエージェント。API実装、データベース、ビジネスロジック開発時に使用。
-tools: Read, Write, Edit, Glob, Grep, Bash
 model: default
 ---
 
