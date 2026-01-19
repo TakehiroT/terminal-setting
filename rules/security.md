@@ -33,7 +33,7 @@
 
 ## 依存関係の管理
 
-- **定期的な脆弟性チェック**: `npm audit`、`pnpm audit`を実行
+- **定期的な脆弱性チェック**: `npm audit`、`pnpm audit`を実行
 - **自動更新ツール**: Dependabot、Renovate Botを活用
 - **最小権限の原則**: 必要最小限のパッケージのみをインストール
 
