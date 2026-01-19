@@ -1,6 +1,6 @@
 {
   "name": "tmux-orchestration",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "tmux orchestration using Task tool for parallel sub-agent execution. Single orchestrator manages Frontend/Backend/Test workers via Task tool. Supports send-keys for direct inter-pane communication.",
   "author": {
     "name": "takehiro"
