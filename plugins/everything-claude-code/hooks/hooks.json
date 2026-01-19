@@ -27,7 +27,7 @@
       },
       "hook": {
         "type": "preToolUse",
-        "command": "bash -c 'input=$(cat); file_path=$(echo \"$input\" | jq -r \".tool_input.file_path // \\\"\\\"\"); if [[ \"$file_path\" == *.md ]] && [[ \"$file_path\" != *CLAUDE.md ]] && [[ \"$file_path\" != *SKILL.md ]]; then echo \"WARNING: .mdファイルの作成は本当に必要ですか？\" >&2; fi; echo \"$input\"'"
+        "command": "bash -c 'input=$(cat); file_path=$(printf \"%s\" \"$input\" | jq -r \".tool_input.file_path // \\\"\\\"\"); if [[ \"$file_path\" == *.md ]] && [[ \"$file_path\" != *CLAUDE.md ]] && [[ \"$file_path\" != *SKILL.md ]]; then echo \"WARNING: .mdファイルの作成は本当に必要ですか？\" >&2; fi; printf \"%s\" \"$input\"'"
       }
     },
     {
@@ -37,7 +37,7 @@
       },
       "hook": {
         "type": "postToolUse",
-        "command": "./hooks/scripts/format-code.sh"
+        "command": "bash -c 'input=$(cat); file_path=$(printf \"%s\" \"$input\" | jq -r \".tool_input.file_path // \\\"\\\"\"); if [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then dir=$(dirname \"$file_path\"); pr=\"$dir\"; while [ \"$pr\" != \"/\" ] && [ ! -f \"$pr/package.json\" ]; do pr=$(dirname \"$pr\"); done; fmt=\"\"; if [ -n \"${CLAUDE_FORMATTER:-}\" ]; then fmt=\"$CLAUDE_FORMATTER\"; elif [ -f \"$pr/biome.json\" ]; then fmt=\"biome\"; elif [ -f \"$pr/.prettierrc\" ] || [ -f \"$pr/prettier.config.js\" ]; then fmt=\"prettier\"; else fmt=\"biome\"; fi; if [ \"$fmt\" = \"biome\" ] && command -v biome >/dev/null 2>&1; then biome format --write \"$file_path\" 2>&1 | head -5 >&2 || true; elif [ \"$fmt\" = \"prettier\" ]; then if command -v prettier >/dev/null 2>&1; then prettier --write \"$file_path\" 2>&1 | head -5 >&2 || true; elif [ -f \"$pr/node_modules/.bin/prettier\" ]; then \"$pr/node_modules/.bin/prettier\" --write \"$file_path\" 2>&1 | head -5 >&2 || true; fi; fi; fi; printf \"%s\" \"$input\"'"
       }
     },
     {
@@ -47,7 +47,7 @@
       },
       "hook": {
         "type": "postToolUse",
-        "command": "bash -c 'file_path=$(cat | jq -r \".tool_input.file_path // \\\"\\\"\"); if [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then dir=$(dirname \"$file_path\"); project_root=\"$dir\"; while [ \"$project_root\" != \"/\" ] && [ ! -f \"$project_root/tsconfig.json\" ]; do project_root=$(dirname \"$project_root\"); done; if [ -f \"$project_root/tsconfig.json\" ]; then cd \"$project_root\" && npx tsc --noEmit 2>&1 | head -20 >&2; fi; fi; cat'"
+        "command": "bash -c 'input=$(cat); file_path=$(printf \"%s\" \"$input\" | jq -r \".tool_input.file_path // \\\"\\\"\"); if [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then dir=$(dirname \"$file_path\"); pr=\"$dir\"; while [ \"$pr\" != \"/\" ] && [ ! -f \"$pr/tsconfig.json\" ]; do pr=$(dirname \"$pr\"); done; if [ -f \"$pr/tsconfig.json\" ]; then cd \"$pr\" && npx tsc --noEmit 2>&1 | head -20 >&2 || true; fi; fi; printf \"%s\" \"$input\"'"
       }
     },
     {
@@ -57,7 +57,7 @@
       },
       "hook": {
         "type": "postToolUse",
-        "command": "bash -c 'echo \"WARNING: console.logが含まれています。デバッグコードの残留に注意してください。\" >&2; cat'"
+        "command": "bash -c 'input=$(cat); echo \"WARNING: console.logが含まれています。デバッグコードの残留に注意してください。\" >&2; printf \"%s\" \"$input\"'"
       }
     },
     {
