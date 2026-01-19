@@ -1,73 +1,53 @@
 {
-  "hooks": [
-    {
-      "matcher": {
-        "tool": "Bash",
-        "input_contains": ["npm run dev", "pnpm dev", "yarn dev", "bun dev"]
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'cmd=$(echo \"$TOOL_INPUT\" | jq -r \".command // \\\"\\\"\"); if echo \"$cmd\" | grep -qE \"(npm run dev|pnpm dev|yarn dev|bun dev)\"; then if [ -z \"$TMUX\" ] && [ -z \"$ZELLIJ\" ]; then echo \"[Hook] dev serverはtmuxまたはZellij内で実行してください\" >&2; exit 1; fi; fi; if echo \"$cmd\" | grep -q \"git push\"; then echo \"[Hook] Git push確認\" >&2; fi; exit 0'"
+          }
+        ]
       },
-      "hook": {
-        "type": "preToolUse",
-        "command": "bash -c 'if [ -z \"$TMUX\" ] && [ -z \"$ZELLIJ\" ]; then echo \"ERROR: dev serverはtmuxまたはZellij内で実行してください\" >&2; exit 1; fi'"
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'fp=$(echo \"$TOOL_INPUT\" | jq -r \".file_path // \\\"\\\"\"); if [[ \"$fp\" == *.md ]] && [[ \"$fp\" != *CLAUDE.md ]] && [[ \"$fp\" != *SKILL.md ]]; then echo \"[Hook] .mdファイルの作成は本当に必要ですか？\" >&2; fi; exit 0'"
+          }
+        ]
       }
-    },
-    {
-      "matcher": {
-        "tool": "Bash",
-        "input_contains": ["git push"]
-      },
-      "hook": {
-        "type": "preToolUse",
-        "command": "bash -c 'echo \"Git push確認: 続行しますか？\" >&2'"
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'fp=$(echo \"$TOOL_INPUT\" | jq -r \".file_path // \\\"\\\"\"); if [ -z \"$fp\" ] || [ ! -f \"$fp\" ]; then exit 0; fi; case \"$fp\" in *.ts|*.tsx|*.js|*.jsx) pr=$(dirname \"$fp\"); while [ \"$pr\" != \"/\" ] && [ ! -f \"$pr/package.json\" ]; do pr=$(dirname \"$pr\"); done; fmt=\"${CLAUDE_FORMATTER:-}\"; if [ -z \"$fmt\" ]; then if [ -f \"$pr/biome.json\" ]; then fmt=biome; elif [ -f \"$pr/.prettierrc\" ] || [ -f \"$pr/.prettierrc.json\" ]; then fmt=prettier; else fmt=biome; fi; fi; if [ \"$fmt\" = biome ] && command -v biome >/dev/null 2>&1; then biome format --write \"$fp\" 2>&1 | head -3 >&2 || true; elif [ \"$fmt\" = prettier ]; then if command -v prettier >/dev/null 2>&1; then prettier --write \"$fp\" 2>&1 | head -3 >&2 || true; fi; fi;; esac; exit 0'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'fp=$(echo \"$TOOL_INPUT\" | jq -r \".file_path // \\\"\\\"\"); case \"$fp\" in *.ts|*.tsx) pr=$(dirname \"$fp\"); while [ \"$pr\" != \"/\" ] && [ ! -f \"$pr/tsconfig.json\" ]; do pr=$(dirname \"$pr\"); done; if [ -f \"$pr/tsconfig.json\" ]; then cd \"$pr\" && npx tsc --noEmit 2>&1 | head -15 >&2 || true; fi;; esac; exit 0'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'fp=$(echo \"$TOOL_INPUT\" | jq -r \".file_path // \\\"\\\"\"); if [ -n \"$fp\" ] && [ -f \"$fp\" ]; then if grep -q \"console\\.log\" \"$fp\" 2>/dev/null; then echo \"[Hook] WARNING: console.logが含まれています\" >&2; fi; fi; exit 0'"
+          }
+        ]
       }
-    },
-    {
-      "matcher": {
-        "tool": "Write",
-        "input_contains": [".md"]
-      },
-      "hook": {
-        "type": "preToolUse",
-        "command": "bash -c 'input=$(cat); file_path=$(printf \"%s\" \"$input\" | jq -r \".tool_input.file_path // \\\"\\\"\"); if [[ \"$file_path\" == *.md ]] && [[ \"$file_path\" != *CLAUDE.md ]] && [[ \"$file_path\" != *SKILL.md ]]; then echo \"WARNING: .mdファイルの作成は本当に必要ですか？\" >&2; fi; printf \"%s\" \"$input\"'"
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[Hook] 最終監査: console.log残留をチェックしてください\" >&2; exit 0'"
+          }
+        ]
       }
-    },
-    {
-      "matcher": {
-        "tool": ["Write", "Edit"],
-        "input_contains": [".ts", ".tsx", ".js", ".jsx"]
-      },
-      "hook": {
-        "type": "postToolUse",
-        "command": "bash -c 'input=$(cat); file_path=$(printf \"%s\" \"$input\" | jq -r \".tool_input.file_path // \\\"\\\"\"); if [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then dir=$(dirname \"$file_path\"); pr=\"$dir\"; while [ \"$pr\" != \"/\" ] && [ ! -f \"$pr/package.json\" ]; do pr=$(dirname \"$pr\"); done; fmt=\"\"; if [ -n \"${CLAUDE_FORMATTER:-}\" ]; then fmt=\"$CLAUDE_FORMATTER\"; elif [ -f \"$pr/biome.json\" ]; then fmt=\"biome\"; elif [ -f \"$pr/.prettierrc\" ] || [ -f \"$pr/.prettierrc.json\" ] || [ -f \"$pr/.prettierrc.js\" ] || [ -f \"$pr/prettier.config.js\" ]; then fmt=\"prettier\"; else fmt=\"biome\"; fi; if [ \"$fmt\" = \"biome\" ] && command -v biome >/dev/null 2>&1; then biome format --write \"$file_path\" 2>&1 | head -5 >&2 || true; elif [ \"$fmt\" = \"prettier\" ]; then if command -v prettier >/dev/null 2>&1; then prettier --write \"$file_path\" 2>&1 | head -5 >&2 || true; elif [ -f \"$pr/node_modules/.bin/prettier\" ]; then \"$pr/node_modules/.bin/prettier\" --write \"$file_path\" 2>&1 | head -5 >&2 || true; fi; fi; fi; printf \"%s\" \"$input\"'"
-      }
-    },
-    {
-      "matcher": {
-        "tool": ["Write", "Edit"],
-        "input_contains": [".ts", ".tsx"]
-      },
-      "hook": {
-        "type": "postToolUse",
-        "command": "bash -c 'input=$(cat); file_path=$(printf \"%s\" \"$input\" | jq -r \".tool_input.file_path // \\\"\\\"\"); if [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then dir=$(dirname \"$file_path\"); pr=\"$dir\"; while [ \"$pr\" != \"/\" ] && [ ! -f \"$pr/tsconfig.json\" ]; do pr=$(dirname \"$pr\"); done; if [ -f \"$pr/tsconfig.json\" ]; then cd \"$pr\" && npx tsc --noEmit 2>&1 | head -20 >&2 || true; fi; fi; printf \"%s\" \"$input\"'"
-      }
-    },
-    {
-      "matcher": {
-        "tool": ["Write", "Edit"],
-        "input_contains": ["console.log"]
-      },
-      "hook": {
-        "type": "postToolUse",
-        "command": "bash -c 'input=$(cat); echo \"WARNING: console.logが含まれています。デバッグコードの残留に注意してください。\" >&2; printf \"%s\" \"$input\"'"
-      }
-    },
-    {
-      "matcher": {
-        "event": "Stop"
-      },
-      "hook": {
-        "type": "Stop",
-        "command": "bash -c 'echo \"最終監査: console.log残留をチェックしてください\" >&2'"
-      }
-    }
-  ]
+    ]
+  }
 }

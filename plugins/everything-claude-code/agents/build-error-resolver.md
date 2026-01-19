@@ -1,4 +1,6 @@
 ---
+name: build-error-resolver
+description: ビルド・TypeScriptエラー解決の専門家。最小限の差分で迅速にエラーを修正。
 model: sonnet
 ---
 

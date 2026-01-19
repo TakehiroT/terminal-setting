@@ -1,4 +1,6 @@
 ---
+name: refactor-cleaner
+description: リファクタリング・デッドコード削除の専門家。コード品質改善とクリーンアップを担当。
 model: sonnet
 ---
 

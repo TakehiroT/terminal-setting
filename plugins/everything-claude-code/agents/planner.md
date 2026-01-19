@@ -1,4 +1,6 @@
 ---
+name: planner
+description: 計画立案の専門家。機能実装やリファクタリングの要件分析、タスク分解、優先順位付けを実施。
 model: opus
 ---
 

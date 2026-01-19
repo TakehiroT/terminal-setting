@@ -1,4 +1,6 @@
 ---
+name: tdd-guide
+description: TDD専門家。Red-Green-Refactorサイクルで高品質なコード作成を支援。80%+カバレッジを目標。
 model: opus
 ---
 

@@ -1,4 +1,6 @@
 ---
+name: doc-updater
+description: ドキュメント更新の専門家。README、APIドキュメント、変更履歴の作成・更新を担当。
 model: sonnet
 ---
 

@@ -1,4 +1,6 @@
 ---
+name: e2e-runner
+description: E2Eテスト専門家。Playwright/Cypressでユーザーフローをテスト。フレイキーテスト対策も実施。
 model: sonnet
 ---
 

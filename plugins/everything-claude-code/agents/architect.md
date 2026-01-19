@@ -1,4 +1,6 @@
 ---
+name: architect
+description: ソフトウェアアーキテクト。システム設計、コンポーネント分割、技術選定を担当。
 model: opus
 ---
 
