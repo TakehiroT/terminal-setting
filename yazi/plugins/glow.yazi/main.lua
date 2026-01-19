@@ -1,7 +1,7 @@
 local M = {}
 
-local function get_cache_path(url, width)
-	local hash = ya.hash(tostring(url) .. ":" .. tostring(width))
+local function get_cache_path(url, width, mtime)
+	local hash = ya.hash(tostring(url) .. ":" .. tostring(width) .. ":" .. tostring(mtime))
 	return "/tmp/yazi-glow-cache-" .. hash
 end
 
@@ -61,7 +61,8 @@ local function render_glow(url, width, cache_path)
 end
 
 function M:peek(job)
-	local cache_path = get_cache_path(job.file.url, job.area.w)
+	local mtime = job.file.cha and job.file.cha.mtime or 0
+	local cache_path = get_cache_path(job.file.url, job.area.w, mtime)
 
 	-- キャッシュから読み込み試行
 	local lines = read_cache(cache_path)
