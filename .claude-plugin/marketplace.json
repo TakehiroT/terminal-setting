@@ -16,6 +16,12 @@
       "source": "./plugins/tmux-orchestration",
       "description": "tmux orchestration using Task tool for parallel sub-agent execution. Supports send-keys for direct inter-pane communication.",
       "version": "1.0.1"
+    },
+    {
+      "name": "everything-claude-code",
+      "source": "./plugins/everything-claude-code",
+      "description": "TDD、品質チェック、専門エージェントを提供。planner/architect/tdd-guide等のエージェントと/plan/tdd等のコマンドを含む。",
+      "version": "1.0.0"
     }
   ]
 }

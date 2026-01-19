@@ -1,0 +1,73 @@
+{
+  "hooks": [
+    {
+      "matcher": {
+        "tool": "Bash",
+        "input_contains": ["npm run dev", "pnpm dev", "yarn dev", "bun dev"]
+      },
+      "hook": {
+        "type": "preToolUse",
+        "command": "bash -c 'if [ -z \"$TMUX\" ] && [ -z \"$ZELLIJ\" ]; then echo \"ERROR: dev serverはtmuxまたはZellij内で実行してください\" >&2; exit 1; fi'"
+      }
+    },
+    {
+      "matcher": {
+        "tool": "Bash",
+        "input_contains": ["git push"]
+      },
+      "hook": {
+        "type": "preToolUse",
+        "command": "bash -c 'echo \"Git push確認: 続行しますか？\" >&2'"
+      }
+    },
+    {
+      "matcher": {
+        "tool": "Write",
+        "input_contains": [".md"]
+      },
+      "hook": {
+        "type": "preToolUse",
+        "command": "bash -c 'file_path=$(cat | jq -r \".tool_input.file_path // \\\"\\\"\"); if [[ \"$file_path\" == *.md ]] && [[ \"$file_path\" != *CLAUDE.md ]] && [[ \"$file_path\" != *SKILL.md ]]; then echo \"WARNING: .mdファイルの作成は本当に必要ですか？\" >&2; fi; cat'"
+      }
+    },
+    {
+      "matcher": {
+        "tool": ["Write", "Edit"],
+        "input_contains": [".ts", ".tsx", ".js", ".jsx"]
+      },
+      "hook": {
+        "type": "postToolUse",
+        "command": "scripts/format-code.sh"
+      }
+    },
+    {
+      "matcher": {
+        "tool": ["Write", "Edit"],
+        "input_contains": [".ts", ".tsx"]
+      },
+      "hook": {
+        "type": "postToolUse",
+        "command": "bash -c 'file_path=$(cat | jq -r \".tool_input.file_path // \\\"\\\"\"); if [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then dir=$(dirname \"$file_path\"); project_root=\"$dir\"; while [ \"$project_root\" != \"/\" ] && [ ! -f \"$project_root/tsconfig.json\" ]; do project_root=$(dirname \"$project_root\"); done; if [ -f \"$project_root/tsconfig.json\" ]; then cd \"$project_root\" && npx tsc --noEmit 2>&1 | head -20 >&2; fi; fi; cat'"
+      }
+    },
+    {
+      "matcher": {
+        "tool": ["Write", "Edit"],
+        "input_contains": ["console.log"]
+      },
+      "hook": {
+        "type": "postToolUse",
+        "command": "bash -c 'echo \"WARNING: console.logが含まれています。デバッグコードの残留に注意してください。\" >&2; cat'"
+      }
+    },
+    {
+      "matcher": {
+        "event": "Stop"
+      },
+      "hook": {
+        "type": "Stop",
+        "command": "bash -c 'echo \"最終監査: console.log残留をチェックしてください\" >&2'"
+      }
+    }
+  ]
+}
