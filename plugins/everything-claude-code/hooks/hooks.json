@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'cmd=$(echo \"$TOOL_INPUT\" | jq -r \".command // \\\"\\\"\"); if echo \"$cmd\" | grep -qE \"(npm run dev|pnpm dev|yarn dev|bun dev)\"; then if [ -z \"$TMUX\" ] && [ -z \"$ZELLIJ\" ]; then echo \"[Hook] dev serverはtmuxまたはZellij内で実行してください\" >&2; exit 1; fi; fi; if echo \"$cmd\" | grep -q \"git push\"; then echo \"[Hook] Git push確認\" >&2; fi; exit 0'"
+            "command": "bash -c 'cmd=$(echo \"$TOOL_INPUT\" | jq -r \".command // \\\"\\\"\"); if echo \"$cmd\" | grep -qE \"(npm run dev|pnpm dev|yarn dev|bun dev)\"; then if [ -z \"$TMUX\" ] && [ -z \"$ZELLIJ\" ]; then echo \"[Hook] dev serverはtmuxまたはZellij内で実行してください\" >&2; exit 1; fi; fi; if echo \"$cmd\" | grep -q \"git push\"; then if [ -z \"$SKIP_GIT_PUSH_CONFIRM\" ]; then echo \"[Hook] Git push: SKIP_GIT_PUSH_CONFIRM未設定のためブロック\" >&2; exit 1; fi; fi; exit 0'"
           }
         ]
       },
@@ -30,7 +30,7 @@
           },
           {
             "type": "command",
-            "command": "bash -c 'fp=$(echo \"$TOOL_INPUT\" | jq -r \".file_path // \\\"\\\"\"); case \"$fp\" in *.ts|*.tsx) pr=$(dirname \"$fp\"); while [ \"$pr\" != \"/\" ] && [ ! -f \"$pr/tsconfig.json\" ]; do pr=$(dirname \"$pr\"); done; if [ -f \"$pr/tsconfig.json\" ]; then cd \"$pr\" && npx tsc --noEmit 2>&1 | head -15 >&2 || true; fi;; esac; exit 0'"
+            "command": "bash -c 'fp=$(echo \"$TOOL_INPUT\" | jq -r \".file_path // \\\"\\\"\"); case \"$fp\" in *.ts|*.tsx) pr=$(dirname \"$fp\"); while [ \"$pr\" != \"/\" ] && [ ! -f \"$pr/tsconfig.json\" ]; do pr=$(dirname \"$pr\"); done; if [ -f \"$pr/tsconfig.json\" ]; then cd \"$pr\" && npx --no-install tsc --noEmit 2>&1 | head -15 >&2 || true; fi;; esac; exit 0'"
           },
           {
             "type": "command",
