@@ -1,0 +1,12 @@
+{
+  "name": "everything-claude-code",
+  "version": "1.0.0",
+  "description": "everything-claude-code の設計思想を適用。TDD、品質チェック、専門エージェントを提供。",
+  "author": {
+    "name": "takehiro"
+  },
+  "commands": "./commands/",
+  "agents": "./agents/",
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
+}

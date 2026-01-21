@@ -93,6 +93,16 @@ cp codex/config.json ~/.codex/
 cp codex/skills/reviewer/SKILL.md ~/.codex/skills/reviewer/
 cp codex/skills/tmux-reviewer/SKILL.md ~/.codex/skills/tmux-reviewer/
 
+# Claude Code rules (グローバル設定)
+echo "Claude Code rules をインストール中..."
+mkdir -p ~/.claude/rules
+for file in rules/*.md; do
+    if [ -f "$file" ]; then
+        filename=$(basename "$file")
+        cp "$file" ~/.claude/rules/terminal-setting-"$filename"
+    fi
+done
+
 # Ghostty（既存設定がある場合はスキップ）
 if [ ! -f ~/.config/ghostty/config ]; then
     cp ghostty/config ~/.config/ghostty/

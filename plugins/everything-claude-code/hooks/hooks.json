@@ -1,0 +1,53 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'cmd=$(echo \"$TOOL_INPUT\" | jq -r \".command // \\\"\\\"\"); if echo \"$cmd\" | grep -qE \"(npm run dev|pnpm dev|yarn dev|bun dev)\"; then if [ -z \"$TMUX\" ] && [ -z \"$ZELLIJ\" ]; then echo \"[Hook] dev serverはtmuxまたはZellij内で実行してください\" >&2; exit 1; fi; fi; if echo \"$cmd\" | grep -q \"git push\"; then if [ -z \"$SKIP_GIT_PUSH_CONFIRM\" ]; then echo \"[Hook] Git push: SKIP_GIT_PUSH_CONFIRM未設定のためブロック\" >&2; exit 1; fi; fi; exit 0'"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'fp=$(echo \"$TOOL_INPUT\" | jq -r \".file_path // \\\"\\\"\"); if [[ \"$fp\" == *.md ]] && [[ \"$fp\" != *CLAUDE.md ]] && [[ \"$fp\" != *SKILL.md ]]; then echo \"[Hook] .mdファイルの作成は本当に必要ですか？\" >&2; fi; exit 0'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'fp=$(echo \"$TOOL_INPUT\" | jq -r \".file_path // \\\"\\\"\"); if [ -z \"$fp\" ] || [ ! -f \"$fp\" ]; then exit 0; fi; case \"$fp\" in *.ts|*.tsx|*.js|*.jsx) pr=$(dirname \"$fp\"); while [ \"$pr\" != \"/\" ] && [ ! -f \"$pr/package.json\" ]; do pr=$(dirname \"$pr\"); done; fmt=\"${CLAUDE_FORMATTER:-}\"; if [ -z \"$fmt\" ]; then if [ -f \"$pr/biome.json\" ]; then fmt=biome; elif [ -f \"$pr/.prettierrc\" ] || [ -f \"$pr/.prettierrc.json\" ]; then fmt=prettier; else fmt=biome; fi; fi; if [ \"$fmt\" = biome ] && command -v biome >/dev/null 2>&1; then biome format --write \"$fp\" 2>&1 | head -3 >&2 || true; elif [ \"$fmt\" = prettier ]; then if command -v prettier >/dev/null 2>&1; then prettier --write \"$fp\" 2>&1 | head -3 >&2 || true; fi; fi;; esac; exit 0'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'fp=$(echo \"$TOOL_INPUT\" | jq -r \".file_path // \\\"\\\"\"); case \"$fp\" in *.ts|*.tsx) pr=$(dirname \"$fp\"); while [ \"$pr\" != \"/\" ] && [ ! -f \"$pr/tsconfig.json\" ]; do pr=$(dirname \"$pr\"); done; if [ -f \"$pr/tsconfig.json\" ]; then cd \"$pr\" && npx --no-install tsc --noEmit 2>&1 | head -15 >&2 || true; fi;; esac; exit 0'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'fp=$(echo \"$TOOL_INPUT\" | jq -r \".file_path // \\\"\\\"\"); if [ -n \"$fp\" ] && [ -f \"$fp\" ]; then if grep -q \"console\\.log\" \"$fp\" 2>/dev/null; then echo \"[Hook] WARNING: console.logが含まれています\" >&2; fi; fi; exit 0'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[Hook] 最終監査: console.log残留をチェックしてください\" >&2; exit 0'"
+          }
+        ]
+      }
+    ]
+  }
+}
