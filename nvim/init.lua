@@ -8,21 +8,143 @@
 --   - Standard shortcuts (Ctrl+S, Ctrl+Z, etc.)
 --   - Modeless editing (type to insert)
 --   - No vim knowledge required
+--   - LSP support (Cmd+Click / F12 for Go to Definition)
 --
 -- Note: File tree is handled by Yazi, Git by lazygit
 ----------------------------------------------------------------------
 
 
 ----------------------------------------------------------------------
--- 1. Kanagawa Dragon Color Scheme (matches Ghostty theme)
+-- 1. Plugin Manager (lazy.nvim)
 ----------------------------------------------------------------------
 
--- Load kanagawa with dragon variant
-vim.cmd("colorscheme kanagawa-dragon")
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+  -- Color scheme
+  {
+    "rebelot/kanagawa.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      vim.cmd("colorscheme kanagawa-dragon")
+    end,
+  },
+
+  -- Git signs
+  {
+    "lewis6991/gitsigns.nvim",
+    config = function()
+      require("gitsigns").setup({
+        signs = {
+          add          = { text = "|" },
+          change       = { text = "|" },
+          delete       = { text = "_" },
+          topdelete    = { text = "-" },
+          changedelete = { text = "~" },
+        },
+        signs_staged = {
+          add          = { text = "|" },
+          change       = { text = "|" },
+          delete       = { text = "_" },
+          topdelete    = { text = "-" },
+          changedelete = { text = "~" },
+        },
+        signcolumn = true,
+        numhl = false,
+        linehl = false,
+        word_diff = false,
+        current_line_blame = false,
+      })
+    end,
+  },
+
+}, {
+  -- lazy.nvim options
+  ui = { border = "rounded" },
+})
 
 
 ----------------------------------------------------------------------
--- 2. Display and Input Settings
+-- 2. LSP Configuration (Neovim 0.11+ native)
+----------------------------------------------------------------------
+
+-- LSP keymaps (set when any LSP attaches)
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local opts = { buffer = args.buf, silent = true }
+
+    -- Go to definition (F12 / gd)
+    vim.keymap.set("n", "<F12>", vim.lsp.buf.definition, opts)
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+
+    -- Other useful LSP keymaps
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)           -- Show hover info
+    vim.keymap.set("n", "<F2>", vim.lsp.buf.rename, opts)       -- Rename symbol
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)     -- Find references
+    vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+  end,
+})
+
+-- TypeScript/JavaScript
+vim.lsp.config["ts_ls"] = {
+  cmd = { "typescript-language-server", "--stdio" },
+  filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+  root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
+}
+
+-- Python
+vim.lsp.config["pyright"] = {
+  cmd = { "pyright-langserver", "--stdio" },
+  filetypes = { "python" },
+  root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
+}
+
+-- Go
+vim.lsp.config["gopls"] = {
+  cmd = { "gopls" },
+  filetypes = { "go", "gomod", "gowork", "gotmpl" },
+  root_markers = { "go.mod", "go.work", ".git" },
+}
+
+-- Rust
+vim.lsp.config["rust_analyzer"] = {
+  cmd = { "rust-analyzer" },
+  filetypes = { "rust" },
+  root_markers = { "Cargo.toml", ".git" },
+}
+
+-- Lua (for Neovim config)
+vim.lsp.config["lua_ls"] = {
+  cmd = { "lua-language-server" },
+  filetypes = { "lua" },
+  root_markers = { ".luarc.json", ".luarc.jsonc", ".git" },
+  settings = {
+    Lua = {
+      runtime = { version = "LuaJIT" },
+      diagnostics = { globals = { "vim" } },
+      workspace = { library = vim.api.nvim_get_runtime_file("", true) },
+    },
+  },
+}
+
+-- Enable all configured LSP servers
+vim.lsp.enable({ "ts_ls", "pyright", "gopls", "rust_analyzer", "lua_ls" })
+
+
+----------------------------------------------------------------------
+-- 3. Display and Input Settings
 ----------------------------------------------------------------------
 
 vim.opt.number = true
@@ -50,7 +172,7 @@ vim.opt.backspace = { "indent", "eol", "start" }
 
 
 ----------------------------------------------------------------------
--- 3. Mouse Settings
+-- 4. Mouse Settings
 ----------------------------------------------------------------------
 
 vim.opt.mouse = "a"
@@ -59,9 +181,126 @@ vim.opt.mousemodel = "extend"
 -- Share clipboard with OS
 vim.opt.clipboard = "unnamedplus"
 
+-- Go to definition function
+local function goto_definition()
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  if #clients == 0 then
+    return
+  end
+
+  vim.lsp.buf.definition({
+    on_list = function(options)
+      if options == nil or options.items == nil or #options.items == 0 then
+        return
+      end
+      local item = options.items[1]
+      if item.filename then
+        vim.cmd("edit " .. item.filename)
+      end
+      vim.api.nvim_win_set_cursor(0, { item.lnum, item.col - 1 })
+    end,
+  })
+end
+
+-- Peek definition in floating window
+local function peek_definition()
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  if #clients == 0 then
+    return
+  end
+
+  vim.lsp.buf.definition({
+    on_list = function(options)
+      if options == nil or options.items == nil or #options.items == 0 then
+        return
+      end
+
+      local item = options.items[1]
+      local filename = item.filename
+      local lnum = item.lnum
+
+      -- Read entire file
+      local lines = vim.fn.readfile(filename)
+      if #lines == 0 then return end
+
+      -- Calculate window size
+      local width = math.min(120, math.floor(vim.o.columns * 0.8))
+      local height = math.min(30, math.floor(vim.o.lines * 0.6))
+
+      -- Create floating window
+      local buf = vim.api.nvim_create_buf(false, true)
+      vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+
+      -- Set filetype and enable syntax highlighting
+      local ext = filename:match("%.([^%.]+)$")
+      if ext then
+        local ft_map = { ts = "typescript", tsx = "typescriptreact", js = "javascript", jsx = "javascriptreact", py = "python", rs = "rust", go = "go", lua = "lua" }
+        local ft = ft_map[ext] or ext
+        vim.bo[buf].filetype = ft
+        -- Enable syntax highlighting for this buffer
+        vim.api.nvim_buf_call(buf, function()
+          vim.cmd("syntax enable")
+          vim.cmd("filetype detect")
+        end)
+      end
+
+      local win = vim.api.nvim_open_win(buf, true, {
+        relative = "cursor",
+        row = 1,
+        col = 0,
+        width = width,
+        height = height,
+        style = "minimal",
+        border = "rounded",
+        title = " " .. vim.fn.fnamemodify(filename, ":t") .. " ",
+        title_pos = "center",
+      })
+
+      -- Move cursor to definition line
+      vim.api.nvim_win_set_cursor(win, { lnum, item.col - 1 })
+
+      -- Highlight definition line
+      vim.api.nvim_set_hl(0, "PeekDefinitionLine", { bg = "#3a3a5a" })
+      vim.api.nvim_buf_add_highlight(buf, -1, "PeekDefinitionLine", lnum - 1, 0, -1)
+
+      -- Close on Escape or q
+      local function close_peek()
+        if vim.api.nvim_win_is_valid(win) then
+          vim.api.nvim_win_close(win, true)
+        end
+        if vim.api.nvim_buf_is_valid(buf) then
+          vim.api.nvim_buf_delete(buf, { force = true })
+        end
+      end
+
+      vim.keymap.set("n", "<Esc>", close_peek, { buffer = buf, silent = true, nowait = true })
+      vim.keymap.set("n", "q", close_peek, { buffer = buf, silent = true, nowait = true })
+
+      -- Enter to jump to definition
+      vim.keymap.set("n", "<CR>", function()
+        close_peek()
+        vim.cmd("edit " .. filename)
+        vim.api.nvim_win_set_cursor(0, { lnum, item.col - 1 })
+      end, { buffer = buf, silent = true })
+    end,
+  })
+end
+
+-- Ctrl+D: Go to definition (works from any mode)
+vim.keymap.set({ "n", "i", "v" }, "<C-d>", function()
+  vim.cmd("stopinsert")
+  goto_definition()
+end, { silent = true })
+
+-- Double-click: Peek definition in floating window
+vim.keymap.set({ "n", "i", "v" }, "<2-LeftMouse>", function()
+  vim.cmd("stopinsert")
+  peek_definition()
+end, { silent = true })
+
 
 ----------------------------------------------------------------------
--- 4. Highlight Changed Lines
+-- 5. Highlight Changed Lines
 ----------------------------------------------------------------------
 
 -- Highlight color for changed lines
@@ -96,7 +335,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 
 
 ----------------------------------------------------------------------
--- 5. Backspace / Delete Support
+-- 6. Backspace / Delete Support
 -- Handle terminal differences (<BS> / <C-h>)
 ----------------------------------------------------------------------
 
@@ -139,7 +378,7 @@ vim.keymap.set("n", "<CR>", "i<CR>", { noremap = true, silent = true })
 
 
 ----------------------------------------------------------------------
--- 6. Ctrl / Cmd Shortcuts
+-- 7. Ctrl / Cmd Shortcuts
 ----------------------------------------------------------------------
 
 -- Select all
@@ -196,7 +435,7 @@ vim.keymap.set("v", "<S-Down>", "j", { silent = true })
 
 
 ----------------------------------------------------------------------
--- 7. Help Screen (Press ? to show)
+-- 8. Help Screen (Press ? to show)
 ----------------------------------------------------------------------
 
 local function show_help()
@@ -217,7 +456,13 @@ local function show_help()
     "    Ctrl+C              Copy",
     "    Ctrl+V              Paste",
     "",
-    "  NAVIGATION",
+    "  CODE NAVIGATION (LSP)",
+    "    Double-click        Peek definition",
+    "    Ctrl+D              Jump to definition",
+    "    Enter (in peek)     Jump to file",
+    "    Esc (in peek)       Close preview",
+    "",
+    "  FILE NAVIGATION",
     "    Yazi                File browser",
     "    lazygit             Git operations",
     "",
@@ -271,7 +516,7 @@ vim.keymap.set("n", "?", show_help, { silent = true })
 
 
 ----------------------------------------------------------------------
--- 8. Dynamic Hints (in statusline)
+-- 9. Dynamic Hints (in statusline)
 ----------------------------------------------------------------------
 
 -- Generate hints for editor (dynamic based on state)
@@ -299,7 +544,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "FileType" }, {
 
 
 ----------------------------------------------------------------------
--- 9. Exit
+-- 10. Exit
 ----------------------------------------------------------------------
 
 local function quit_with_confirm()
@@ -338,28 +583,4 @@ end
 vim.keymap.set("n", "<Esc><Esc>", quit_with_confirm, { silent = true })
 
 
-----------------------------------------------------------------------
--- 10. Git Signs (show changed lines)
-----------------------------------------------------------------------
-
-require("gitsigns").setup({
-  signs = {
-    add          = { text = "|" },
-    change       = { text = "|" },
-    delete       = { text = "_" },
-    topdelete    = { text = "-" },
-    changedelete = { text = "~" },
-  },
-  signs_staged = {
-    add          = { text = "|" },
-    change       = { text = "|" },
-    delete       = { text = "_" },
-    topdelete    = { text = "-" },
-    changedelete = { text = "~" },
-  },
-  signcolumn = true,
-  numhl = false,
-  linehl = false,
-  word_diff = false,
-  current_line_blame = false,  -- Set to true to show git blame inline
-})
+-- Note: Git signs are configured in lazy.nvim plugin section above

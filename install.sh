@@ -45,7 +45,7 @@ mkdir -p ~/.config/yazi/plugins
 mkdir -p ~/.codex/skills/reviewer
 mkdir -p ~/.codex/skills/tmux-reviewer
 mkdir -p ~/.config/ghostty
-mkdir -p ~/.config/nvim/pack/plugins/start
+mkdir -p ~/.config/nvim
 
 # ファイルコピー
 echo "設定ファイルをコピー中..."
@@ -110,7 +110,7 @@ else
     echo "Ghostty: 既存設定を維持（上書きスキップ）"
 fi
 
-# Neovim (VSCode-like config)
+# Neovim (VSCode-like config with LSP)
 echo "Neovim設定をインストール中..."
 if [ -d ~/.config/nvim ] && [ -f ~/.config/nvim/init.lua ]; then
     # 既存設定がこのリポジトリのものでなければバックアップ
@@ -118,22 +118,16 @@ if [ -d ~/.config/nvim ] && [ -f ~/.config/nvim/init.lua ]; then
         BACKUP_DIR=~/.config/nvim.backup.$(date +%Y%m%d_%H%M%S)
         echo "既存のNeovim設定をバックアップ: $BACKUP_DIR"
         mv ~/.config/nvim "$BACKUP_DIR"
-        mkdir -p ~/.config/nvim/pack/plugins/start
+        mkdir -p ~/.config/nvim
     fi
 fi
+# 古いpackディレクトリがあれば削除（lazy.nvimに移行）
+if [ -d ~/.config/nvim/pack ]; then
+    echo "古いプラグインディレクトリを削除中..."
+    rm -rf ~/.config/nvim/pack
+fi
 cp nvim/init.lua ~/.config/nvim/
-
-# Neovim プラグイン
-if [ ! -d ~/.config/nvim/pack/plugins/start/kanagawa.nvim ]; then
-    echo "kanagawa.nvim をインストール中..."
-    git clone --depth 1 https://github.com/rebelot/kanagawa.nvim.git \
-        ~/.config/nvim/pack/plugins/start/kanagawa.nvim
-fi
-if [ ! -d ~/.config/nvim/pack/plugins/start/gitsigns.nvim ]; then
-    echo "gitsigns.nvim をインストール中..."
-    git clone --depth 1 https://github.com/lewis6991/gitsigns.nvim.git \
-        ~/.config/nvim/pack/plugins/start/gitsigns.nvim
-fi
+echo "初回起動時にlazy.nvimが自動でプラグインをインストールします"
 
 echo ""
 echo "=== インストール完了 ==="
@@ -159,13 +153,22 @@ echo ""
 echo "その後、'source ~/.bashrc' を実行してください。"
 echo ""
 echo "=== Neovim 設定 ==="
-echo "VSCodeライクな編集が可能:"
+echo "VSCodeライクな編集 + LSP定義ジャンプ:"
 echo "  - Ctrl+S: 保存, Ctrl+Z: 元に戻す"
 echo "  - Ctrl+C/V: コピー/ペースト"
 echo "  - Shift+矢印: 選択"
+echo "  - ダブルクリック: 定義をプレビュー (Peek)"
+echo "  - Ctrl+D: 定義にジャンプ"
 echo "  - ?: ヘルプ表示"
 echo "  - Esc×2: 終了（未保存確認あり）"
-echo "  - 文字入力で自動的にインサートモード"
+echo ""
+echo "=== Language Server (LSP) ==="
+echo "定義ジャンプを使うには Language Server が必要です:"
+echo "  npm install -g typescript-language-server typescript  # TypeScript/JS"
+echo "  pip install pyright                                    # Python"
+echo "  go install golang.org/x/tools/gopls@latest            # Go"
+echo "  rustup component add rust-analyzer                    # Rust"
+echo "  brew install lua-language-server                      # Lua"
 echo ""
 echo "=== 起動方法 ==="
 echo "  ide   : Zellij版IDE環境"

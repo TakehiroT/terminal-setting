@@ -6,6 +6,52 @@ Ghostty + Zellij/tmux + Yazi を使った IDE 風ターミナル設定
 - `ide` - Zellij版（モダンなUI、初心者向け）
 - `idet` - tmux版（セッション間通信、上級者向け）
 
+## Neovim 設定 (VSCode風 + LSP)
+
+Vim知識不要で使えるVSCode風エディタ + LSP定義ジャンプ:
+
+### 基本操作
+| キー | 動作 |
+|------|------|
+| クリック | カーソル移動 |
+| 文字入力 | そのまま入力（自動でInsertモード） |
+| ドラッグ | テキスト選択 |
+| Ctrl+S | 保存 |
+| Ctrl+Z | 元に戻す |
+| Ctrl+Shift+Z | やり直し |
+| Ctrl+A | 全選択 |
+| Ctrl+C/V | コピー/ペースト |
+| Shift+矢印 | 選択 |
+| ? | ヘルプ表示 |
+| Esc×2 | 終了（未保存確認あり） |
+
+### LSP定義ジャンプ
+| キー | 動作 |
+|------|------|
+| **ダブルクリック** | 定義をフローティングでプレビュー (Peek) |
+| **Ctrl+D** | 定義に直接ジャンプ |
+| Enter (プレビュー内) | ファイルを開く |
+| Esc (プレビュー内) | プレビューを閉じる |
+
+### Language Server インストール
+
+```bash
+# TypeScript/JavaScript
+npm install -g typescript-language-server typescript
+
+# Python
+pip install pyright
+
+# Go
+go install golang.org/x/tools/gopls@latest
+
+# Rust
+rustup component add rust-analyzer
+
+# Lua
+brew install lua-language-server
+```
+
 ## Ghostty 設定
 
 透明背景・ぼかし効果のモダンなターミナル設定:
@@ -423,6 +469,9 @@ tma       # セッションにアタッチ
         ├── glow.yazi/             # Markdownプレビュー
         ├── git.yazi/              # Gitステータス (外部: yazi-rs/plugins)
         └── fg.yazi/               # fzf+rg全文検索 (外部: DreamMaoMao/fg.yazi)
+
+├── nvim/
+│   └── init.lua                   # Neovim設定 (VSCode風 + LSP)
 
 ~/.tmux.conf                       # tmux 設定
 
