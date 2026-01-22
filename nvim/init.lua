@@ -107,6 +107,36 @@ require("lazy").setup({
     end,
   },
 
+  -- Auto formatter (format on save)
+  {
+    "stevearc/conform.nvim",
+    event = { "BufWritePre" },
+    cmd = { "ConformInfo" },
+    config = function()
+      require("conform").setup({
+        formatters_by_ft = {
+          -- JS/TS/JSON/CSS: use LSP (Biome) as primary
+          javascript = { lsp_format = "prefer" },
+          javascriptreact = { lsp_format = "prefer" },
+          typescript = { lsp_format = "prefer" },
+          typescriptreact = { lsp_format = "prefer" },
+          json = { lsp_format = "prefer" },
+          jsonc = { lsp_format = "prefer" },
+          css = { lsp_format = "prefer" },
+          -- Other languages: use external formatters
+          python = { "black" },
+          go = { "gofmt" },
+          rust = { "rustfmt" },
+          lua = { "stylua" },
+        },
+        format_on_save = {
+          timeout_ms = 1000,
+          lsp_fallback = true,
+        },
+      })
+    end,
+  },
+
 }, {
   -- lazy.nvim options
   ui = { border = "rounded" },
@@ -176,8 +206,15 @@ vim.lsp.config["lua_ls"] = {
   },
 }
 
+-- Biome (formatting + linting for JS/TS/JSON)
+vim.lsp.config["biome"] = {
+  cmd = { "npx", "biome", "lsp-proxy" },
+  filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact", "json", "jsonc", "css" },
+  root_markers = { "biome.json", "biome.jsonc" },
+}
+
 -- Enable all configured LSP servers
-vim.lsp.enable({ "ts_ls", "pyright", "gopls", "rust_analyzer", "lua_ls" })
+vim.lsp.enable({ "ts_ls", "pyright", "gopls", "rust_analyzer", "lua_ls", "biome" })
 
 
 ----------------------------------------------------------------------
