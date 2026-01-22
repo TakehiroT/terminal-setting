@@ -7,6 +7,9 @@
 #   Tab   - ワークツリー切り替え
 #   Esc   - 終了
 
+# Homebrew PATH（Intel/Apple Silicon両対応）
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
 PLANS_DIR="${1:-./.spec}"
 
 get_git_root() {
@@ -44,7 +47,7 @@ show_worktrees() {
     } | fzf --ansi --delimiter='\t' --with-nth=1 \
         --layout=reverse --height=100% \
         --border=rounded \
-        --preview='p=$(echo {} | cut -f2); f=$(find "$p" -maxdepth 3 -type f -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -1); [ -n "$f" ] && /usr/local/bin/glow -s dark "$f" || echo "No plan files"' \
+        --preview='p=$(echo {} | cut -f2); f=$(find "$p" -maxdepth 3 -type f -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -1); [ -n "$f" ] && glow -s dark "$f" || echo "No plan files"' \
         --preview-window=right:60%:border-left:wrap \
         --header="Worktrees | Enter: select | Esc: back" \
         --bind='enter:accept'
@@ -65,10 +68,10 @@ show_files() {
     fzf --ansi \
         --layout=reverse --height=100% \
         --border=rounded \
-        --preview='script -q /dev/null /usr/local/bin/glow -s dark {}' \
+        --preview='script -q /dev/null glow -s dark {}' \
         --preview-window=right:65%:border-left:wrap \
         --header="[$wt_name] Plans | Enter: view | Tab: worktrees | Esc: quit" \
-        --bind="enter:execute(/usr/local/bin/glow -s dark -p {})" \
+        --bind="enter:execute(glow -s dark -p {})" \
         --expect=tab
 }
 
