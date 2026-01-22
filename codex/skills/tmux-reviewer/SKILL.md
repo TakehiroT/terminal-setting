@@ -29,13 +29,14 @@ tmux send-keys -t ide:Impl.2  # reviewer（自分）
 
 ## レビュー対象
 
-`.spec/<feature>/` ディレクトリ内のファイルを確認:
+`.spec/<feature>/` ディレクトリ内の進捗ファイルを確認:
 
-- `task.md` - タスク定義
 - `frontend.md` - Frontend進捗
 - `backend.md` - Backend進捗
 - `test.md` - Test進捗
 - `status.md` - 全体ステータス
+
+**注意**: タスク定義はClaude Codeのplanモードで自動生成され、コンテキストとして自動的に読み込まれます。
 
 ## レビューチェックリスト
 

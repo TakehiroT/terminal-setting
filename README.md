@@ -104,6 +104,7 @@ theme = "Kanagawa Dragon"
 - **フローティング編集**: Enter/`e`でNeovim、`g`でlazygitをフローティングペインで起動
 - **ディレクトリ同期**: Yaziでディレクトリ移動すると、ターミナルも自動で追従
 - **AI並列開発**: ImplタブでClaude Orchestrator + Codex Reviewerによる開発
+- **Vibe Coding**: Claude Code planモードと連携した「見守る」開発スタイル
 
 ## タブ構成
 
@@ -207,6 +208,46 @@ tmux版は `idet` コマンドで起動します。
 - **セッション間通信**: `tmux send-keys` で外部からテキスト送信可能
 - **スクリプト連携**: シェルスクリプトからclaude/codexを操作
 - **軽量**: Zellijより低リソース
+
+## Vibe Coding（Claude Code planモード連携）
+
+Claude Codeのplanモードを活用した「見守る」開発スタイル。コードを書くのではなく、AIに指示を出して結果を確認するワークフローです。
+
+### セットアップ
+
+プロジェクトの `.claude/settings.json` に以下を追加:
+
+```json
+{
+  "plansDirectory": "./.spec"
+}
+```
+
+テンプレートは `templates/settings.json` を参照。
+
+### ワークフロー
+
+```
+1. Shift+Tab でplanモードに切り替え
+2. 要件を入力 → 計画が .spec/ に自動保存
+3. Worker を起動 → 自動的にplanを読み込み
+4. 実装を見守る
+5. レビュー → PR作成
+```
+
+### planモード操作
+
+| 操作 | キー |
+|------|------|
+| planモード切り替え | `Shift+Tab` |
+| Extended Thinking | `Option+T` (macOS) / `Alt+T` |
+| Verbose Mode | `Ctrl+O` |
+
+### メリット
+
+- **タスク定義の自動化**: 手動で task.md を書く必要なし
+- **コンテキスト共有**: Workerが自動的にplanを読み込む
+- **計画の可視化**: `.spec/` ディレクトリで計画を確認可能
 
 ## Git Worktree で安全な並列開発（推奨）
 
@@ -338,6 +379,9 @@ cp yazi/plugins/glow.yazi/main.lua ~/.config/yazi/plugins/glow.yazi/
 # Codex skills
 mkdir -p ~/.codex/skills/reviewer
 cp codex/skills/reviewer/SKILL.md ~/.codex/skills/reviewer/
+
+# Claude Code settings テンプレート（プロジェクトごとにコピー）
+# cp templates/settings.json <your-project>/.claude/settings.json
 
 # Claude Code skills (プラグインとしてインストール - 後述)
 ```

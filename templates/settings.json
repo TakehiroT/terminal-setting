@@ -1,0 +1,7 @@
+{
+  "plansDirectory": "./.spec",
+  "model": "sonnet",
+  "permissions": {
+    "allow": []
+  }
+}

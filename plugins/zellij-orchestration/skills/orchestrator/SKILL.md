@@ -44,11 +44,12 @@ git gtr new <feature>
 
 # 重要: worktreeに移動
 cd .branches/<feature>
-
-# .spec/<feature>/task.md にタスク定義を書く
 ```
 
-**注意**: worktree作成後、必ず`.branches/<feature>/`に移動すること。移動しないと元のリポジトリで作業してしまう。
+**注意**:
+- worktree作成後、必ず`.branches/<feature>/`に移動すること
+- タスク定義はClaude Codeのplanモードで自動生成され、コンテキストとして自動的に読み込まれます
+- `Shift+Tab`でplanモードに切り替えて計画を作成可能
 
 ### 2. サブエージェント並列起動
 
@@ -106,7 +107,7 @@ git checkout main && git pull && git gtr rm <feature>
 
 ```
 .branches/<feature>/    # worktree（全Worker共通）
-.spec/<feature>/   # タスク定義・進捗・レビュー結果
+.spec/                  # planモード出力（タスク定義）+ 進捗・レビュー結果
 ```
 
 ## gtrコマンド
