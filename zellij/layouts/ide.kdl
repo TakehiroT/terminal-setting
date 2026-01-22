@@ -54,4 +54,20 @@ layout {
             }
         }
     }
+
+    // Monitor タブ（Vibe Coding用 - plan監視 + ビルド/テスト監視）
+    tab name="Monitor" {
+        pane split_direction="horizontal" {
+            // 上部: Plan Viewer (60%) - planモード出力をリアルタイム表示
+            pane size="60%" name="plan-viewer" {
+                command "bash"
+                args "-c" "~/.config/zellij/scripts/plan-viewer.sh ./.spec"
+            }
+            // 下部: ビルド/テスト監視用ターミナル (40%)
+            pane size="40%" name="watcher" {
+                // ここでビルドやテストの監視コマンドを実行
+                // 例: pnpm run dev, npm run watch, cargo watch など
+            }
+        }
+    }
 }

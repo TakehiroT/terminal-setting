@@ -5,11 +5,12 @@ default_layout "ide"
 // キーバインド設定
 keybinds {
     shared {
-        // Alt+1/2/3: タブ切り替え
+        // Alt+1/2/3/4/5: タブ切り替え (Code/Git/Diff/Impl/Monitor)
         bind "Alt 1" { GoToTab 1; }
         bind "Alt 2" { GoToTab 2; }
         bind "Alt 3" { GoToTab 3; }
         bind "Alt 4" { GoToTab 4; }
+        bind "Alt 5" { GoToTab 5; }
 
         // Alt+m: アクションメニュー (tmuxと同じ)
         bind "Alt m" {
@@ -67,8 +68,8 @@ simplified_ui false
 //
 // Ctrl+q  → Zellijを終了
 //
-// Alt+1/2/3 → タブ切り替え (カスタム)
-//           1: Code, 2: Git, 3: Impl
+// Alt+1/2/3/4/5 → タブ切り替え (カスタム)
+//           1: Code, 2: Git, 3: Diff, 4: Impl, 5: Monitor
 //
 // Alt+m   → アクションメニュー (カスタム)
 //           Activate Skills, Restart, Git, Cleanup
