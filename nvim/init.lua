@@ -195,6 +195,10 @@ vim.opt.smartindent = true
 vim.opt.wrap = false
 vim.opt.termguicolors = true
 
+-- Fix HMR (Hot Module Replacement) for Next.js/Vite
+-- Use overwrite instead of rename to preserve inode
+vim.opt.backupcopy = "yes"
+
 -- Hide mode display (INSERT/NORMAL) for VSCode-like feel
 vim.opt.showmode = false
 
