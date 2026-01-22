@@ -1,3 +1,5 @@
 # 外部プラグイン（install.shでインストール）
 yazi/plugins/fg.yazi/
 yazi/plugins/git.yazi/
+.spec/
+.claude/settings.local.json
