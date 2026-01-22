@@ -33,6 +33,12 @@ Vim知識不要で使えるVSCode風エディタ + LSP定義ジャンプ:
 | Enter (プレビュー内) | ファイルを開く |
 | Esc (プレビュー内) | プレビューを閉じる |
 
+### Git差分表示
+| キー | 動作 |
+|------|------|
+| **Ctrl+G** | diffview.nvimでGit差分ビューを開く |
+| q / Esc | 差分ビューを閉じる |
+
 ### Language Server インストール
 
 ```bash
@@ -77,7 +83,7 @@ theme = "Kanagawa Dragon"
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│  Code  │  Git  │  Impl  │                      (タブバー) │
+│  Code  │  Git  │  Diff  │  Impl  │              (タブバー) │
 ├────────────────────────────────────────────────────────────────┤
 │                                                                │
 │   Yazi (ビルトインプレビュー付き)                               │
@@ -104,8 +110,33 @@ theme = "Kanagawa Dragon"
 | タブ | 内容 |
 |------|------|
 | Code | Yazi（ビルトインプレビュー） + Terminal |
-| Git | lazygit |
+| Git | lazygit（delta でシンタックスハイライト付きdiff） |
+| Diff | mainとの差分表示 + worktree切り替え |
 | Impl | Claude Orchestrator + Codex Reviewer |
+
+## Diff タブ（Git差分ビューア）
+
+mainブランチとの差分をfzf + deltaで表示。worktree切り替えも可能。
+
+```
+┌─ Files ───────────────┬─ Preview (delta) ────────────────────┐
+│ [wt] branch ← main    │                                      │
+│                       │ @@ -10,5 +10,8 @@                    │
+│ src/app.ts           │ - const old = "value";               │
+│ src/utils.ts         │ + const new = "updated";             │
+│ package.json         │                                      │
+└───────────────────────┴──────────────────────────────────────┘
+```
+
+### 操作
+
+| キー | 動作 |
+|------|------|
+| `↑/↓` | ファイル選択 |
+| `Enter` | diff全画面表示 |
+| `Tab` | worktree一覧へ切り替え |
+| `Esc` | 終了 |
+| `Ctrl+R` | リロード |
 
 ## Impl タブ（AI並列開発）
 
@@ -228,7 +259,7 @@ git gtr rm frontend
 
 ```bash
 # コアツール
-brew install zellij yazi neovim lazygit
+brew install zellij yazi neovim lazygit git-delta
 
 # Yazi 必須依存（プラグインで使用）
 brew install glow    # Markdownプレビュー (glow.yazi)
@@ -403,7 +434,7 @@ ide
 
 | キー | 動作 |
 |------|------|
-| `Alt+1/2/3` | タブ切り替え |
+| `Alt+1/2/3/4` | タブ切り替え (Code/Git/Diff/Impl) |
 | `Ctrl+p` → `h/j/k/l` | ペイン移動 |
 | `Ctrl+p` → `n` | 新規ペイン |
 | `Ctrl+p` → `x` | ペインを閉じる |
@@ -476,7 +507,11 @@ tma       # セッションにアタッチ
 ~/.tmux.conf                       # tmux 設定
 
 ~/.local/bin/
-└── idet                           # tmux IDE起動コマンド
+├── idet                           # tmux IDE起動コマンド
+└── git-diff-viewer                # Git差分ビューア
+
+~/.config/lazygit/
+└── config.yml                     # lazygit設定（deltaでシンタックスハイライト）
 
 codex/skills/
 ├── reviewer/SKILL.md              # Zellij版レビュアースキル
