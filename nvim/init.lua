@@ -511,6 +511,18 @@ vim.keymap.set("v", "<S-Right>", "l", { silent = true })
 vim.keymap.set("v", "<S-Up>", "k", { silent = true })
 vim.keymap.set("v", "<S-Down>", "j", { silent = true })
 
+-- Search (Ctrl+F)
+vim.opt.hlsearch = true    -- Highlight search results
+vim.opt.incsearch = true   -- Incremental search
+vim.opt.ignorecase = true  -- Case insensitive search
+vim.opt.smartcase = true   -- Case sensitive if uppercase present
+
+vim.keymap.set({ "n", "i", "v" }, "<C-f>", "<Esc>/", { silent = true })
+vim.keymap.set({ "n", "i", "v" }, "<D-f>", "<Esc>/", { silent = true })
+
+-- Clear search highlight with Esc
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { silent = true })
+
 
 ----------------------------------------------------------------------
 -- 8. Help Screen (Press ? to show)

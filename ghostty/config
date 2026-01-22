@@ -30,10 +30,11 @@ keybind = performable:cmd+c=copy_to_clipboard
 keybind = cmd+v=paste_from_clipboard
 keybind = shift+enter=text:\n
 
-# Neovim用: Cmd+S/Z/AをNeovimに渡す
+# Neovim用: Cmd+S/Z/A/FをNeovimに渡す
 keybind = cmd+s=unbind
 keybind = cmd+z=unbind
 keybind = cmd+a=unbind
+keybind = cmd+f=unbind
 keybind = cmd+shift+z=unbind
 
 # Voice input (Dictation/IME)
