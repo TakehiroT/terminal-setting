@@ -21,7 +21,12 @@ tmux new-window -t "$SESSION_NAME" -n "Git"
 tmux select-pane -t "$SESSION_NAME:Git.1" -T "lazygit"
 tmux send-keys -t "$SESSION_NAME:Git" "lazygit" Enter
 
-# === Window 3: Impl (claude + codex) ===
+# === Window 3: Diff (mainとの差分 + worktree切り替え) ===
+tmux new-window -t "$SESSION_NAME" -n "Diff"
+tmux select-pane -t "$SESSION_NAME:Diff.1" -T "diff-viewer"
+tmux send-keys -t "$SESSION_NAME:Diff" "~/.local/bin/git-diff-viewer" Enter
+
+# === Window 4: Impl (claude + codex) ===
 tmux new-window -t "$SESSION_NAME" -n "Impl"
 tmux select-pane -t "$SESSION_NAME:Impl.1" -T "orchestrator"
 tmux send-keys -t "$SESSION_NAME:Impl" 'while true; do claude; echo "再起動中..."; sleep 1; done' Enter

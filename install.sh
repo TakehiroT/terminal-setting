@@ -17,6 +17,7 @@ command -v nvim >/dev/null 2>&1 || MISSING_TOOLS+=("neovim")
 command -v bat >/dev/null 2>&1 || MISSING_TOOLS+=("bat")
 command -v glow >/dev/null 2>&1 || MISSING_TOOLS+=("glow")
 command -v lazygit >/dev/null 2>&1 || MISSING_TOOLS+=("lazygit")
+command -v delta >/dev/null 2>&1 || MISSING_TOOLS+=("git-delta")
 command -v fzf >/dev/null 2>&1 || MISSING_TOOLS+=("fzf")
 command -v rg >/dev/null 2>&1 || MISSING_TOOLS+=("ripgrep")
 command -v fd >/dev/null 2>&1 || MISSING_TOOLS+=("fd")
@@ -46,6 +47,7 @@ mkdir -p ~/.codex/skills/reviewer
 mkdir -p ~/.codex/skills/tmux-reviewer
 mkdir -p ~/.config/ghostty
 mkdir -p ~/.config/nvim
+mkdir -p ~/.config/lazygit
 
 # ファイルコピー
 echo "設定ファイルをコピー中..."
@@ -128,6 +130,15 @@ if [ -d ~/.config/nvim/pack ]; then
 fi
 cp nvim/init.lua ~/.config/nvim/
 echo "初回起動時にlazy.nvimが自動でプラグインをインストールします"
+
+# lazygit (delta でシンタックスハイライト付きdiff)
+echo "lazygit設定をインストール中..."
+cp lazygit/config.yml ~/.config/lazygit/
+
+# Git Diff Viewer (mainとの差分 + worktree切り替え)
+echo "Git Diff Viewerをインストール中..."
+cp scripts/git-diff-viewer.sh ~/.local/bin/git-diff-viewer
+chmod +x ~/.local/bin/git-diff-viewer
 
 echo ""
 echo "=== インストール完了 ==="

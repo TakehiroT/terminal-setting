@@ -29,6 +29,14 @@ layout {
         }
     }
 
+    // Diff表示タブ (mainとの差分 + worktree切り替え)
+    tab name="Diff" {
+        pane name="diff-viewer" {
+            command "bash"
+            args "-c" "~/.local/bin/git-diff-viewer"
+        }
+    }
+
     // Implementation タブ（Claude Orchestrator + Codex Reviewer）
     // Task toolでサブエージェントを並列実行
     // Alt+m でアクションメニュー (Activate Skills, Restart, etc.)

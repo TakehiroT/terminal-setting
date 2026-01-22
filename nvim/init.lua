@@ -70,6 +70,43 @@ require("lazy").setup({
     end,
   },
 
+  -- Git diff viewer (left: file list, right: diff preview)
+  {
+    "sindrets/diffview.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewFileHistory" },
+    keys = {
+      { "<C-g>", "<cmd>DiffviewOpen<CR>", desc = "Open Git diff view" },
+    },
+    config = function()
+      require("diffview").setup({
+        enhanced_diff_hl = true,
+        view = {
+          default = {
+            layout = "diff2_horizontal",
+          },
+        },
+        file_panel = {
+          listing_style = "tree",
+          win_config = {
+            position = "left",
+            width = 35,
+          },
+        },
+        keymaps = {
+          view = {
+            ["q"] = "<cmd>DiffviewClose<CR>",
+            ["<Esc>"] = "<cmd>DiffviewClose<CR>",
+          },
+          file_panel = {
+            ["q"] = "<cmd>DiffviewClose<CR>",
+            ["<Esc>"] = "<cmd>DiffviewClose<CR>",
+          },
+        },
+      })
+    end,
+  },
+
 }, {
   -- lazy.nvim options
   ui = { border = "rounded" },
@@ -465,6 +502,7 @@ local function show_help()
     "  FILE NAVIGATION",
     "    Yazi                File browser",
     "    lazygit             Git operations",
+    "    Ctrl+G              Git diff view",
     "",
     "  EXIT",
     "    Esc Esc             Quit",
