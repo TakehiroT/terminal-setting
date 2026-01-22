@@ -105,30 +105,6 @@ for file in rules/*.md; do
     fi
 done
 
-# Claude Code settings.local.json (plansDirectory設定)
-echo "Claude Code settings.local.json を設定中..."
-SETTINGS_FILE="$HOME/.claude/settings.local.json"
-if [ -f "$SETTINGS_FILE" ]; then
-    # 既存ファイルがある場合、plansDirectoryがなければ追加
-    if ! grep -q '"plansDirectory"' "$SETTINGS_FILE"; then
-        if command -v jq >/dev/null 2>&1; then
-            # jqがあればJSONを適切に更新
-            TMP_FILE=$(mktemp)
-            jq '. + {"plansDirectory": "./.spec"}' "$SETTINGS_FILE" > "$TMP_FILE" && mv "$TMP_FILE" "$SETTINGS_FILE"
-            echo "  plansDirectory を追加しました"
-        else
-            echo "  jqがインストールされていないため、手動で追加してください:"
-            echo '  "plansDirectory": "./.spec"'
-        fi
-    else
-        echo "  plansDirectory は既に設定済みです"
-    fi
-else
-    # 新規作成
-    echo '{"plansDirectory": "./.spec"}' > "$SETTINGS_FILE"
-    echo "  settings.local.json を作成しました"
-fi
-
 # Ghostty（既存設定がある場合はスキップ）
 if [ ! -f ~/.config/ghostty/config ]; then
     cp ghostty/config ~/.config/ghostty/
@@ -220,6 +196,13 @@ echo "  # tmux版"
 echo "  /plugin install tmux-orchestration@terminal-setting"
 echo ""
 echo "含まれるスキル: orchestrator (両方同じスキル名)"
+echo ""
+echo "=== Vibe Coding (planモード連携) ==="
+echo "各プロジェクトの .claude/settings.json に以下を追加:"
+echo '  {"plansDirectory": "./.spec"}'
+echo ""
+echo "または templates/settings.json をコピー:"
+echo "  cp $(pwd)/templates/settings.json <your-project>/.claude/settings.json"
 echo ""
 echo "=== Codex スキル ==="
 echo "Codex: ~/.codex/skills/ にスキルをインストール済み"
