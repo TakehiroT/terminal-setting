@@ -3,7 +3,7 @@
 # fzfでファイル選択 + worktree切り替え
 #
 # キーバインド:
-#   Enter - 詳細表示 (glow/less)
+#   Enter - 詳細表示 (glow)
 #   Tab   - ワークツリー切り替え
 #   Esc   - 終了
 
@@ -47,9 +47,12 @@ show_worktrees() {
     } | fzf --ansi --delimiter='\t' --with-nth=1 \
         --layout=reverse --height=100% \
         --border=rounded \
+        --color=preview-bg:-1 \
         --preview='p=$(echo {} | cut -f2); f=$(find "$p" -maxdepth 3 -type f -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -1); [ -n "$f" ] && glow -s dark "$f" || echo "No plan files"' \
         --preview-window=right:60%:border-left:wrap \
-        --header="Worktrees | Enter: select | Esc: back" \
+        --preview-label=" Preview " \
+        --prompt="Worktree> " \
+        --header=$'Enter:select  Esc:back' \
         --bind='enter:accept'
 }
 
@@ -62,16 +65,22 @@ show_files() {
         return
     fi
 
-    # 更新日時順でソートしてファイルパスのみ出力
+    # 更新日時順でソート、ファイル名とフルパスをタブ区切りで出力
     find "$PLANS_DIR" -maxdepth 3 -type f -name "*.md" -print0 2>/dev/null | \
         xargs -0 ls -t 2>/dev/null | \
-    fzf --ansi \
+        while read -r filepath; do
+            echo -e "$(basename "$filepath")\t$filepath"
+        done | \
+    fzf --ansi --delimiter='\t' --with-nth=1 \
         --layout=reverse --height=100% \
         --border=rounded \
-        --preview='script -q /dev/null glow -s dark {}' \
+        --color=preview-bg:-1 \
+        --preview='script -q /dev/null glow -s dark {2}' \
         --preview-window=right:65%:border-left:wrap \
-        --header="[$wt_name] Plans | Enter: view | Tab: worktrees | Esc: quit" \
-        --bind="enter:execute(glow -s dark -p {})" \
+        --preview-label=" Preview " \
+        --prompt="[$wt_name] File> " \
+        --header=$'Enter:view  Tab:worktree  Esc:quit' \
+        --bind="enter:execute(glow -s dark -p {2})" \
         --expect=tab
 }
 
