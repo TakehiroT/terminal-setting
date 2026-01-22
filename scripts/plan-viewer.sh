@@ -1,95 +1,107 @@
 #!/bin/bash
-# plan-viewer.sh - planモード出力をリアルタイム監視・表示
+# Plan Viewer - planファイルのインタラクティブビューア
+# fzfでファイル選択 + worktree切り替え
 #
-# 使い方:
-#   ./plan-viewer.sh [plans_dir]
-#
-# 引数:
-#   plans_dir - planファイルのディレクトリ (デフォルト: ./.spec)
+# キーバインド:
+#   Enter - 詳細表示 (glow/less)
+#   Tab   - ワークツリー切り替え
+#   Esc   - 終了
 
 PLANS_DIR="${1:-./.spec}"
-REFRESH_INTERVAL=2
 
-# 色定義
-CYAN='\033[0;36m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-NC='\033[0m' # No Color
-
-show_header() {
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${CYAN}  Plan Viewer - Watching: ${PLANS_DIR}${NC}"
-    echo -e "${CYAN}  Press Ctrl+C to exit${NC}"
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+get_git_root() {
+    git rev-parse --show-toplevel 2>/dev/null || pwd
 }
 
-find_latest_plan() {
-    # .md ファイルを更新日時順で取得（最新が先頭）
-    # plan*.md または task*.md を対象
-    find "$PLANS_DIR" -maxdepth 2 -type f \( -name "*.md" \) 2>/dev/null | \
-        xargs ls -t 2>/dev/null | \
-        head -1
+get_worktree_name() {
+    local dir="$1"
+    if [[ "$dir" == *"/.branches/"* ]]; then
+        echo "$dir" | sed 's|.*/.branches/||' | cut -d'/' -f1
+    else
+        echo "main"
+    fi
 }
 
-display_plan() {
-    local file="$1"
+show_worktrees() {
+    local git_root=$(get_git_root)
+    local branches_dir="$git_root/.branches"
+    local current_wt=$(get_worktree_name "$PLANS_DIR")
 
-    clear
-    show_header
+    {
+        # メインリポジトリ
+        if [[ -d "$git_root/.spec" ]]; then
+            [ "$current_wt" = "main" ] && echo "▶ main	$git_root/.spec" || echo "  main	$git_root/.spec"
+        fi
+        # .branches配下
+        if [[ -d "$branches_dir" ]]; then
+            for wt in "$branches_dir"/*/; do
+                if [[ -d "${wt}.spec" ]]; then
+                    local name=$(basename "$wt")
+                    [ "$current_wt" = "$name" ] && echo "▶ $name	${wt}.spec" || echo "  $name	${wt}.spec"
+                fi
+            done
+        fi
+    } | fzf --ansi --delimiter='\t' --with-nth=1 \
+        --layout=reverse --height=100% \
+        --border=rounded \
+        --preview='p=$(echo {} | cut -f2); f=$(find "$p" -maxdepth 3 -type f -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -1); [ -n "$f" ] && /usr/local/bin/glow -s dark "$f" || echo "No plan files"' \
+        --preview-window=right:60%:border-left:wrap \
+        --header="Worktrees | Enter: select | Esc: back" \
+        --bind='enter:accept'
+}
 
-    if [[ -z "$file" ]]; then
-        echo ""
-        echo -e "${YELLOW}  Waiting for plan files in ${PLANS_DIR}...${NC}"
-        echo ""
-        echo "  planモードで計画を作成すると、ここに表示されます"
-        echo "  Shift+Tab でplanモードに切り替え"
+show_files() {
+    local wt_name=$(get_worktree_name "$PLANS_DIR")
+    local files=$(find "$PLANS_DIR" -maxdepth 3 -type f -name "*.md" 2>/dev/null)
+
+    if [ -z "$files" ]; then
+        echo "NO_FILES"
         return
     fi
 
-    local filename=$(basename "$file")
-    local modified=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M:%S" "$file" 2>/dev/null || stat -c "%y" "$file" 2>/dev/null | cut -d'.' -f1)
+    # 更新日時順でソートしてファイルパスのみ出力
+    find "$PLANS_DIR" -maxdepth 3 -type f -name "*.md" -print0 2>/dev/null | \
+        xargs -0 ls -t 2>/dev/null | \
+    fzf --ansi \
+        --layout=reverse --height=100% \
+        --border=rounded \
+        --preview='script -q /dev/null /usr/local/bin/glow -s dark {}' \
+        --preview-window=right:65%:border-left:wrap \
+        --header="[$wt_name] Plans | Enter: view | Tab: worktrees | Esc: quit" \
+        --bind="enter:execute(/usr/local/bin/glow -s dark -p {})" \
+        --expect=tab
+}
 
-    echo ""
-    echo -e "${GREEN}  Latest: ${filename}${NC}"
-    echo -e "${GREEN}  Modified: ${modified}${NC}"
-    echo -e "${CYAN}──────────────────────────────────────────────────────────${NC}"
-    echo ""
+# メイン
+[ ! -d "$PLANS_DIR" ] && mkdir -p "$PLANS_DIR"
 
-    # glowがあればMarkdownをレンダリング、なければcatで表示
-    if command -v glow &> /dev/null; then
-        glow -s dark "$file" 2>/dev/null || cat "$file"
-    else
-        cat "$file"
+while true; do
+    result=$(show_files)
+    key=$(echo "$result" | head -1)
+
+    # ファイルなしならworktree選択へ
+    if [ "$result" = "NO_FILES" ]; then
+        clear
+        echo "No plan files in $PLANS_DIR"
+        echo "Switching worktree..."
+        sleep 1
+        selected=$(show_worktrees)
+        if [ -n "$selected" ]; then
+            PLANS_DIR="$(echo "$selected" | cut -f2)"
+            continue
+        else
+            exit 0
+        fi
     fi
-}
 
-main() {
-    # ディレクトリが存在しない場合は作成
-    mkdir -p "$PLANS_DIR"
+    # Escで終了
+    [ -z "$result" ] && exit 0
 
-    local last_file=""
-    local last_mtime=""
-
-    while true; do
-        local latest=$(find_latest_plan)
-        local current_mtime=""
-
-        if [[ -n "$latest" ]]; then
-            current_mtime=$(stat -f "%m" "$latest" 2>/dev/null || stat -c "%Y" "$latest" 2>/dev/null)
+    # Tabでworktree選択
+    if [ "$key" = "tab" ]; then
+        selected=$(show_worktrees)
+        if [ -n "$selected" ]; then
+            PLANS_DIR="$(echo "$selected" | cut -f2)"
         fi
-
-        # ファイルが変わったか、更新されたら再表示
-        if [[ "$latest" != "$last_file" ]] || [[ "$current_mtime" != "$last_mtime" ]]; then
-            display_plan "$latest"
-            last_file="$latest"
-            last_mtime="$current_mtime"
-        fi
-
-        sleep "$REFRESH_INTERVAL"
-    done
-}
-
-# Ctrl+C でクリーンに終了
-trap 'echo -e "\n${NC}Exiting..."; exit 0' INT
-
-main
+    fi
+done
