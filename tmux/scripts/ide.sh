@@ -35,16 +35,10 @@ tmux split-window -t "$SESSION_NAME:Impl" -h -l 30%
 tmux select-pane -t "$SESSION_NAME:Impl.2" -T "reviewer"
 tmux send-keys -t "$SESSION_NAME:Impl.2" 'while true; do codex; echo "再起動中..."; sleep 1; done' Enter
 
-# === Window 5: Monitor (plan監視 + ビルド/テスト監視) ===
+# === Window 5: Monitor (planモード出力をリアルタイム監視) ===
 tmux new-window -t "$SESSION_NAME" -n "Monitor"
 tmux select-pane -t "$SESSION_NAME:Monitor.1" -T "plan-viewer"
 tmux send-keys -t "$SESSION_NAME:Monitor" '~/.config/tmux/scripts/plan-viewer.sh ./.spec' Enter
-
-tmux split-window -t "$SESSION_NAME:Monitor" -v -l 40%
-tmux select-pane -t "$SESSION_NAME:Monitor.2" -T "watcher"
-# watcher paneは空のまま（ユーザーがビルド/テストコマンドを実行）
-
-tmux select-pane -t "$SESSION_NAME:Monitor.1"
 
 # 最初のウィンドウ(Code)を選択
 tmux select-window -t "$SESSION_NAME:Code"
