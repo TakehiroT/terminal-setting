@@ -16,15 +16,34 @@ model: sonnet
 
 ## 報連相ルール
 
-進捗を `.spec/<feature>/test.md` にワンライナー形式で報告してください:
+**重要**: 進捗報告先は現在のgitリポジトリルートの`.spec/test.md`です。
+- worktreeで作業中の場合: `git rev-parse --show-toplevel` でworktreeルートを取得し、その`.spec/`に報告
+- 最初に `mkdir -p $(git rev-parse --show-toplevel)/.spec` でディレクトリを作成してください
 
-```
-[HH:MM] 開始: タスクの実装を開始
-[HH:MM] 進捗: 〇〇を実装中 (50%)
+進捗を `<git-root>/.spec/test.md` に以下の形式で報告してください:
+
+```markdown
+# Test Worker Progress
+
+## Status: active
+
+## Progress: 50
+
+## Tasks
+- [x] 完了したタスク
+- [ ] 進行中のタスク
+- [ ] 未着手のタスク
+
+## Log
 [HH:MM] 完了: タスク実装完了
-[HH:MM] ブロック: △△の完成待ち
-[HH:MM] エラー: □□でエラー発生
+[HH:MM] 進捗: 〇〇を実装中 (50%)
+[HH:MM] 開始: タスクの実装を開始
 ```
+
+**Status**: `waiting` | `active` | `done` | `error`
+**Progress**: 0-100の数値（%は不要）
+**Tasks**: チェックボックス形式でタスク管理
+**Log**: 新しいログを上に追記（降順）
 
 ## ワークフロー
 

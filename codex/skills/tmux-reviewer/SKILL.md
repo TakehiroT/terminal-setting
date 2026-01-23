@@ -29,12 +29,17 @@ tmux send-keys -t ide:Impl.2  # reviewer（自分）
 
 ## レビュー対象
 
-`.spec/<feature>/` ディレクトリ内の進捗ファイルを確認:
+**重要**: オーケストレーターから `/review <worktree-path>` 形式でパスが渡されます。
+- 例: `/review .branches/feature-auth/`
+- このパスがworktreeルートです
+- 進捗ファイルは `<worktree-path>/.spec/` に配置されています
+- **自分のカレントディレクトリではなく、渡されたパスを使用すること**
+
+`<worktree-path>/.spec/` ディレクトリ内の進捗ファイルを確認:
 
 - `frontend.md` - Frontend進捗
 - `backend.md` - Backend進捗
 - `test.md` - Test進捗
-- `status.md` - 全体ステータス
 
 **注意**: タスク定義はClaude Codeのplanモードで自動生成され、コンテキストとして自動的に読み込まれます。
 
@@ -64,10 +69,12 @@ tmux send-keys -t ide:Impl.2  # reviewer（自分）
 
 ## レビュー結果の報告
 
-`.spec/<feature>/review.md` にレビュー結果を記録:
+`<worktree-path>/.spec/review.md` にレビュー結果を記録:
+- オーケストレーターから渡されたパスを使用
+- 例: `.branches/feature-auth/.spec/review.md`
 
 ```
-[HH:MM] レビュー開始: <feature-name>
+[HH:MM] レビュー開始: <branch-name>
 [HH:MM] 指摘: <カテゴリ> - <内容>
 [HH:MM] 提案: <改善案>
 [HH:MM] 承認: 全てのチェック完了
@@ -75,11 +82,12 @@ tmux send-keys -t ide:Impl.2  # reviewer（自分）
 
 ## ワークフロー
 
-1. Orchestratorからレビュー依頼を受け取る
-2. `.spec/<feature>/` の進捗を確認
-3. **`/review` コマンドを使って該当コードをレビュー**
-4. レビュー結果を `review.md` に記録
-5. **Orchestratorに完了を報告**（下記コマンド使用）
+1. Orchestratorから `/review <worktree-path>` 形式でレビュー依頼を受け取る
+2. 渡されたパスをworktreeルートとして使用（例: `.branches/feature-auth/`）
+3. `<worktree-path>/.spec/` の進捗ファイルを確認
+4. **`/review <worktree-path>` でコードをレビュー**
+5. レビュー結果を `<worktree-path>/.spec/review.md` に記録
+6. **Orchestratorに完了を報告**（下記コマンド使用）
 
 ## Orchestratorへの完了報告（必須）
 
@@ -88,16 +96,18 @@ tmux send-keys -t ide:Impl.2  # reviewer（自分）
 ### 修正指摘がある場合:
 
 ```bash
-tmux send-keys -t ide:Impl.1 -l '[REVIEW] 修正指摘あり: .spec/<feature>/review.md を確認してください'
+tmux send-keys -t ide:Impl.1 -l '[REVIEW] 修正指摘あり: <worktree-path>/.spec/review.md を確認してください'
 tmux send-keys -t ide:Impl.1 Enter
 ```
 
 ### 承認の場合:
 
 ```bash
-tmux send-keys -t ide:Impl.1 -l '[REVIEW] 承認: .spec/<feature>/review.md に記録済み。PRを作成してください'
+tmux send-keys -t ide:Impl.1 -l '[REVIEW] 承認: <worktree-path>/.spec/review.md に記録済み。PRを作成してください'
 tmux send-keys -t ide:Impl.1 Enter
 ```
+
+**注意**: `<worktree-path>` はオーケストレーターから受け取ったパスに置き換えること（例: `.branches/feature-auth/`）
 
 **注意**: Claude（Orchestrator）への送信は `Enter` で送信される。`-l` オプションでリテラル送信。
 

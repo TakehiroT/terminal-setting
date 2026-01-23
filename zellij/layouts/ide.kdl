@@ -55,11 +55,19 @@ layout {
         }
     }
 
-    // Monitor タブ（Vibe Coding用 - planモード出力をリアルタイム監視）
+    // Monitor タブ（Vibe Coding用 - Worker進捗 + Plan表示）
     tab name="Monitor" {
-        pane name="plan-viewer" {
-            command "bash"
-            args "-c" "~/.config/zellij/scripts/plan-viewer.sh ./.spec"
+        pane split_direction="vertical" {
+            // 左: Worker進捗ダッシュボード (60%)
+            pane size="60%" name="vibe-dashboard" {
+                command "bash"
+                args "-c" "~/.config/zellij/scripts/vibe-dashboard.sh ./.spec"
+            }
+            // 右: Plan表示 (40%) - watchで自動更新
+            pane size="40%" name="plan-view" {
+                command "bash"
+                args "-c" "~/.config/zellij/scripts/plan-watcher.sh ./.spec"
+            }
         }
     }
 }

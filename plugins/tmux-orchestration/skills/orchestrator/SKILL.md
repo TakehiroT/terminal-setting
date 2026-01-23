@@ -88,14 +88,14 @@ tmux send-keys -t ide:Impl.2 -l 'tmux-reviewer skillを使って /review .branch
 
 **注意**: レビュワーペインでは `tmux-reviewer` スキルを使って `/review` を実行する。
 
-`.spec/<feature>/review.md`を確認し、指摘があれば該当Workerで修正→再レビュー。
+`.branches/<feature>/.spec/review.md`を確認し、指摘があれば該当Workerで修正→再レビュー。
 
 ### 5. PR作成（承認後のみ）
 
 ```bash
 cd .branches/<feature>
 git push -u origin feature/<feature>
-gh pr create --base main --head feature/<feature> --title "feat(<feature>): <説明>" --body "レビュー済み: .spec/<feature>/review.md"
+gh pr create --base main --head feature/<feature> --title "feat(<feature>): <説明>" --body "レビュー済み: .branches/<feature>/.spec/review.md"
 ```
 
 PR URLをユーザーに報告。
@@ -109,8 +109,12 @@ git checkout main && git pull && git gtr rm <feature>
 ## ディレクトリ構造
 
 ```
-.branches/<feature>/    # worktree（全Worker共通）
-.spec/                  # planモード出力（タスク定義）+ 進捗・レビュー結果
+.branches/<feature>/           # worktree（全Worker共通）
+.branches/<feature>/.spec/     # 進捗・レビュー結果（worktreeごと）
+  ├── frontend.md              # Frontend進捗
+  ├── backend.md               # Backend進捗
+  ├── test.md                  # Test進捗
+  └── review.md                # レビュー結果
 ```
 
 ## gtrコマンド
