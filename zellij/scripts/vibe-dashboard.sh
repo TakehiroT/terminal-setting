@@ -197,6 +197,14 @@ get_latest_message() {
     fi
 }
 
+# 文字を繰り返し出力（macOS互換）
+repeat_char() {
+    local char="$1"
+    local count="$2"
+    local i
+    for ((i=0; i<count; i++)); do printf '%s' "$char"; done
+}
+
 # プログレスバー生成
 progress_bar() {
     local percent=$1
@@ -205,9 +213,9 @@ progress_bar() {
     local empty=$((width - filled))
 
     printf "${C_GREEN}"
-    printf '█%.0s' $(seq 1 $filled 2>/dev/null) 2>/dev/null || true
+    repeat_char '█' "$filled"
     printf "${C_DIM}"
-    printf '░%.0s' $(seq 1 $empty 2>/dev/null) 2>/dev/null || true
+    repeat_char '░' "$empty"
     printf "${C_RESET}"
 }
 
@@ -266,7 +274,7 @@ draw_dashboard() {
 
     # 区切り線
     printf "${C_DIM}"
-    printf '═%.0s' $(seq 1 $width)
+    repeat_char '═' "$width"
     printf "${C_RESET}\n"
 
     # 全体進捗
@@ -276,13 +284,13 @@ draw_dashboard() {
 
     # 区切り線
     printf "${C_DIM}"
-    printf '─%.0s' $(seq 1 $width)
+    repeat_char '─' "$width"
     printf "${C_RESET}\n"
 
     # Worker テーブルヘッダー
     printf "  ${C_BOLD}%-12s %-8s %-24s %s${C_RESET}\n" "Worker" "Status" "Progress" "Latest"
     printf "${C_DIM}"
-    printf '─%.0s' $(seq 1 $width)
+    repeat_char '─' "$width"
     printf "${C_RESET}\n"
 
     # 各Worker
@@ -306,11 +314,11 @@ draw_dashboard() {
 
     # アクティビティログ
     printf "\n${C_DIM}"
-    printf '─%.0s' $(seq 1 $width)
+    repeat_char '─' "$width"
     printf "${C_RESET}\n"
     printf "  ${C_BOLD}📝 Recent Activity${C_RESET}\n"
     printf "${C_DIM}"
-    printf '─%.0s' $(seq 1 $width)
+    repeat_char '─' "$width"
     printf "${C_RESET}\n"
 
     local activities=$(get_recent_activities 6)
@@ -327,7 +335,7 @@ draw_dashboard() {
 
     # フッター
     printf "\n${C_DIM}"
-    printf '═%.0s' $(seq 1 $width)
+    repeat_char '═' "$width"
     printf "${C_RESET}\n"
     printf "  ${C_DIM}[q]${C_RESET} Quit  ${C_DIM}[r]${C_RESET} Refresh  ${C_DIM}[w]${C_RESET} Worktree  ${C_DIM}[d]${C_RESET} Detail\n"
 }
@@ -349,11 +357,8 @@ main() {
     while true; do
         draw_dashboard
 
-        # キー入力を待つ (REFRESH_INTERVAL秒間)
-        local end_time=$((SECONDS + REFRESH_INTERVAL))
-        while [[ $SECONDS -lt $end_time ]]; do
-            read -rsn1 key 2>/dev/null || true
-
+        # タイムアウト付きでキー入力を待つ（より堅牢な方法）
+        if read -rsn1 -t "$REFRESH_INTERVAL" key 2>/dev/null; then
             case "$key" in
                 q|Q)
                     stty echo icanon 2>/dev/null
@@ -361,7 +366,8 @@ main() {
                     exit 0
                     ;;
                 r|R)
-                    break
+                    # 即座にリフレッシュ
+                    continue
                     ;;
                 d|D)
                     stty echo icanon 2>/dev/null
@@ -369,7 +375,6 @@ main() {
                     local script_dir="$(dirname "$0")"
                     "$script_dir/plan-viewer.sh" "$SPEC_DIR"
                     stty -echo -icanon time 0 min 0 2>/dev/null || true
-                    break
                     ;;
                 w|W)
                     stty echo icanon 2>/dev/null
@@ -380,12 +385,10 @@ main() {
                         update_spec_path  # plan-watcherに通知
                     fi
                     stty -echo -icanon time 0 min 0 2>/dev/null || true
-                    break
                     ;;
             esac
-
-            sleep 0.1
-        done
+        fi
+        # タイムアウトまたはキー処理後、自動的に次の描画へ
     done
 }
 
