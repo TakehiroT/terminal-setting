@@ -44,12 +44,32 @@ git gtr new <feature>
 
 # 重要: worktreeに移動
 cd .branches/<feature>
+
+# planディレクトリを作成
+mkdir -p .spec
 ```
 
 **注意**:
 - worktree作成後、必ず`.branches/<feature>/`に移動すること
-- タスク定義はClaude Codeのplanモードで自動生成され、コンテキストとして自動的に読み込まれます
+- **planファイルは必ずワークツリー配下（`.spec/`）に作成する**
 - `Shift+Tab`でplanモードに切り替えて計画を作成可能
+
+### planモード設定（必須）
+
+worktree配下にplanファイルを作成するため、worktree移動後に以下を確認:
+
+```bash
+# .claude/settings.json がなければ作成
+cat > .claude/settings.json << 'EOF'
+{
+  "plansDirectory": "./.spec"
+}
+EOF
+```
+
+または、Claude Codeの起動時にカレントディレクトリがworktreeであれば、planモードで作成されるファイルは自動的にworktree配下の`.spec/`に保存される。
+
+**重要**: planファイルは絶対にリポジトリルートや`~/.claude/`に作成しないこと。必ずworktree配下に作成する。
 
 ### 2. サブエージェント並列起動
 
