@@ -168,8 +168,33 @@ show_worktrees() {
         --bind='enter:accept'
 }
 
-# Workerファイルからステータス解析
-parse_worker_status() {
+# agents.json からステータス取得（hooks経由で更新される）
+get_agent_status_from_json() {
+    local worker="$1"
+    local agents_file="$SPEC_DIR/agents.json"
+
+    if [[ -f "$agents_file" ]]; then
+        local status=$(jq -r ".\"$worker\".status // empty" "$agents_file" 2>/dev/null)
+        if [[ -n "$status" ]]; then
+            echo "$status"
+            return 0
+        fi
+    fi
+    return 1
+}
+
+# agents.json から開始時刻取得
+get_agent_started_from_json() {
+    local worker="$1"
+    local agents_file="$SPEC_DIR/agents.json"
+
+    if [[ -f "$agents_file" ]]; then
+        jq -r ".\"$worker\".started // empty" "$agents_file" 2>/dev/null
+    fi
+}
+
+# Workerファイルからステータス解析（フォールバック）
+parse_worker_status_from_file() {
     local file="$1"
     if [[ ! -f "$file" ]]; then
         echo "waiting"
@@ -195,6 +220,22 @@ parse_worker_status() {
             echo "waiting"
         fi
     fi
+}
+
+# Workerステータス取得（agents.json優先、ファイルにフォールバック）
+parse_worker_status() {
+    local file="$1"
+    local worker=$(basename "$file" .md)
+
+    # 1. agents.json から取得を試みる
+    local status
+    if status=$(get_agent_status_from_json "$worker") && [[ -n "$status" ]]; then
+        echo "$status"
+        return
+    fi
+
+    # 2. フォールバック: ファイルから解析
+    parse_worker_status_from_file "$file"
 }
 
 # Workerファイルから進捗率取得
