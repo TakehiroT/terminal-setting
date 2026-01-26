@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$(dirname \"$0\")/subagent-monitor.sh",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/subagent-monitor.sh",
             "timeout": 5
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$(dirname \"$0\")/subagent-monitor.sh",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/subagent-monitor.sh",
             "timeout": 5
           },
           {
