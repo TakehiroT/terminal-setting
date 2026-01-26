@@ -1,6 +1,6 @@
 ---
 description: 実装計画を作成する（Claude Code planモードを活用）
-allowed-tools: Read, Glob, Grep, TodoWrite
+allowed-tools: Read, Glob, Grep, TaskCreate, TaskUpdate, TaskList
 ---
 
 # /plan - 実装計画作成コマンド
@@ -39,9 +39,10 @@ Claude Codeのplanモードを活用して実装計画を作成します。
    - 技術的な検討事項を文書化
    - 実装アプローチの提案
 
-4. **Todoリストの作成**
-   - TodoWriteツールで実装タスクを管理
+4. **タスクリストの作成**
+   - TaskCreate/TaskUpdateツールで実装タスクを管理
    - 各タスクの状態管理（pending/in_progress/completed）
+   - TaskListで進捗を確認
 
 ## settings.json の設定
 

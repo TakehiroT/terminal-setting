@@ -1,6 +1,6 @@
 ---
 description: TDDワークフローを実行する
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TodoWrite
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TaskCreate, TaskUpdate, TaskList
 ---
 
 # /tdd - テスト駆動開発コマンド

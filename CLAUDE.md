@@ -94,7 +94,7 @@ idet    # tmux版
 `rules/orchestrator.md` に基づくワークフロー:
 
 1. **要件ヒアリング**: 曖昧な点があれば確認
-2. **タスク分解**: TodoWriteで管理
+2. **タスク分解**: TaskCreate/TaskUpdateで管理
 3. **サブエージェント委託**: 適切なエージェントにタスクを委託
 4. **品質チェック**: `pnpm check && pnpm test && pnpm build`
 

@@ -47,44 +47,55 @@
 
 ヒアリング完了後、タスクを細分化する。
 
-#### TodoWriteでタスク管理
+#### TaskCreate/TaskUpdateでタスク管理
 
 ```typescript
 // 例: 新機能開発の場合
-{
-  todos: [
-    {
-      content: "要件定義と設計方針の策定",
-      activeForm: "要件定義と設計方針を策定中",
-      status: "in_progress"
-    },
-    {
-      content: "アーキテクチャ設計",
-      activeForm: "アーキテクチャを設計中",
-      status: "pending"
-    },
-    {
-      content: "TDDで実装",
-      activeForm: "TDDで実装中",
-      status: "pending"
-    },
-    {
-      content: "E2Eテスト作成",
-      activeForm: "E2Eテストを作成中",
-      status: "pending"
-    },
-    {
-      content: "品質チェック実行",
-      activeForm: "品質チェックを実行中",
-      status: "pending"
-    },
-    {
-      content: "ドキュメント更新",
-      activeForm: "ドキュメントを更新中",
-      status: "pending"
-    }
-  ]
-}
+// TaskCreateで各タスクを作成
+TaskCreate({
+  subject: "要件定義と設計方針の策定",
+  description: "ユーザー要件を分析し、実装方針を決定する",
+  activeForm: "要件定義と設計方針を策定中"
+})
+
+TaskCreate({
+  subject: "アーキテクチャ設計",
+  description: "システム構造とコンポーネント設計を行う",
+  activeForm: "アーキテクチャを設計中"
+})
+
+TaskCreate({
+  subject: "TDDで実装",
+  description: "テスト駆動開発で機能を実装する",
+  activeForm: "TDDで実装中"
+})
+
+TaskCreate({
+  subject: "E2Eテスト作成",
+  description: "エンドツーエンドテストを作成する",
+  activeForm: "E2Eテストを作成中"
+})
+
+TaskCreate({
+  subject: "品質チェック実行",
+  description: "静的解析、型チェック、テストを実行する",
+  activeForm: "品質チェックを実行中"
+})
+
+TaskCreate({
+  subject: "ドキュメント更新",
+  description: "README、APIドキュメントを更新する",
+  activeForm: "ドキュメントを更新中"
+})
+
+// タスク開始時: TaskUpdateでin_progressに
+TaskUpdate({ taskId: "1", status: "in_progress" })
+
+// タスク完了時: TaskUpdateでcompletedに
+TaskUpdate({ taskId: "1", status: "completed" })
+
+// 進捗確認: TaskListで一覧表示
+TaskList()
 ```
 
 #### タスク分解の原則

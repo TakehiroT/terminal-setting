@@ -90,23 +90,73 @@ get_worktree_name() {
     fi
 }
 
+# 現在のシンボリックリンク先を取得
+get_current_spec_target() {
+    local git_root=$(get_git_root)
+    local spec_link="$git_root/.spec"
+
+    if [[ -L "$spec_link" ]]; then
+        readlink "$spec_link"
+    elif [[ -d "$spec_link" ]]; then
+        echo "$spec_link"  # 実体の場合はそのまま
+    else
+        echo ""
+    fi
+}
+
+# .specシンボリックリンクを切り替え
+switch_spec_symlink() {
+    local target_spec="$1"  # 切り替え先の.specパス
+    local git_root=$(get_git_root)
+    local spec_link="$git_root/.spec"
+    local main_spec="$git_root/.spec.main"
+
+    # 初回: 実体が存在する場合は.spec.mainに退避
+    if [[ -d "$spec_link" && ! -L "$spec_link" ]]; then
+        mv "$spec_link" "$main_spec"
+    fi
+
+    # mainが選択された場合は.spec.mainをターゲットに
+    if [[ "$target_spec" == "$git_root/.spec" ]]; then
+        target_spec="$main_spec"
+    fi
+
+    # ターゲットが存在しない場合は作成
+    if [[ ! -d "$target_spec" ]]; then
+        mkdir -p "$target_spec"
+    fi
+
+    # シンボリックリンクを張り替え
+    rm -f "$spec_link"
+    ln -s "$target_spec" "$spec_link"
+}
+
 # Worktree選択UI
 show_worktrees() {
     local git_root=$(get_git_root)
     local branches_dir="$git_root/.branches"
-    local current_wt=$(get_worktree_name "$SPEC_DIR")
+    local current_target=$(get_current_spec_target)
+    local main_spec="$git_root/.spec.main"
 
     {
-        # メインリポジトリ
-        if [[ -d "$git_root/.spec" ]]; then
-            [ "$current_wt" = "main" ] && echo "▶ main	$git_root/.spec" || echo "  main	$git_root/.spec"
+        # メインリポジトリ (.spec.main または .spec実体)
+        local main_path="$git_root/.spec"
+        [[ -d "$main_spec" ]] && main_path="$main_spec"
+        if [[ -d "$main_path" ]] || [[ -L "$git_root/.spec" && "$(readlink "$git_root/.spec")" == "$main_spec" ]]; then
+            [[ "$current_target" == "$main_spec" || "$current_target" == "$git_root/.spec" ]] \
+                && echo "▶ main	$git_root/.spec" \
+                || echo "  main	$git_root/.spec"
         fi
         # .branches配下
         if [[ -d "$branches_dir" ]]; then
             for wt in "$branches_dir"/*/; do
-                if [[ -d "${wt}.spec" ]]; then
-                    local name=$(basename "$wt")
-                    [ "$current_wt" = "$name" ] && echo "▶ $name	${wt}.spec" || echo "  $name	${wt}.spec"
+                local wt_spec="${wt}.spec"
+                local name=$(basename "$wt")
+                # .specディレクトリが存在するか、作成可能な場合
+                if [[ -d "$wt_spec" ]] || [[ -d "$wt" ]]; then
+                    [[ "$current_target" == "$wt_spec" ]] \
+                        && echo "▶ $name	$wt_spec" \
+                        || echo "  $name	$wt_spec"
                 fi
             done
         fi
@@ -114,7 +164,7 @@ show_worktrees() {
         --layout=reverse --height=100% \
         --border=rounded \
         --prompt="Worktree> " \
-        --header=$'Enter:select  Esc:back' \
+        --header=$'Enter:select  Esc:back  (symlink mode)' \
         --bind='enter:accept'
 }
 
@@ -381,7 +431,11 @@ main() {
                     clear
                     local selected=$(show_worktrees)
                     if [[ -n "$selected" ]]; then
-                        SPEC_DIR="$(echo "$selected" | cut -f2)"
+                        local target_spec="$(echo "$selected" | cut -f2)"
+                        # シンボリックリンクを切り替え
+                        switch_spec_symlink "$target_spec"
+                        # SPEC_DIRはgit rootの.specを指す（シンボリックリンク経由）
+                        SPEC_DIR="$(get_git_root)/.spec"
                         update_spec_path  # plan-watcherに通知
                     fi
                     stty -echo -icanon time 0 min 0 2>/dev/null || true
