@@ -69,7 +69,7 @@ ln -sf ~/.config/tmux/scripts/ide.sh ~/.local/bin/idet
 cp yazi/yazi.toml ~/.config/yazi/
 cp yazi/keymap.toml ~/.config/yazi/
 cp yazi/init.lua ~/.config/yazi/
-cp -r yazi/plugins/* ~/.config/yazi/plugins/
+rsync -a --exclude='.git' yazi/plugins/ ~/.config/yazi/plugins/
 
 # 外部プラグイン
 # git.yazi（Gitステータス表示）
