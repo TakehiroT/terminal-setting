@@ -29,7 +29,7 @@ tmux send-keys -t "$SESSION_NAME:Diff" "~/.local/bin/git-diff-viewer" Enter
 # === Window 4: Impl (claude + codex) ===
 tmux new-window -t "$SESSION_NAME" -n "Impl"
 tmux select-pane -t "$SESSION_NAME:Impl.1" -T "orchestrator"
-tmux send-keys -t "$SESSION_NAME:Impl" 'while true; do claude; echo "再起動中..."; sleep 1; done' Enter
+tmux send-keys -t "$SESSION_NAME:Impl" 'while true; do claude --dangerously-skip-permissions; echo "再起動中..."; sleep 1; done' Enter
 
 tmux split-window -t "$SESSION_NAME:Impl" -h -l 30%
 tmux select-pane -t "$SESSION_NAME:Impl.2" -T "reviewer"

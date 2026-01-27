@@ -45,7 +45,7 @@ layout {
             // 左側: Claude Orchestrator (70%) - exitで自動再起動
             pane size="70%" name="orchestrator" {
                 command "bash"
-                args "-c" "while true; do claude; echo '再起動中...'; sleep 1; done"
+                args "-c" "while true; do claude --dangerously-skip-permissions; echo '再起動中...'; sleep 1; done"
             }
             // 右側: Codex Reviewer (30%) - exitで自動再起動
             pane size="30%" name="reviewer" {
