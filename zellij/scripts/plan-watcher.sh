@@ -24,7 +24,7 @@ read_spec_path() {
 find_plan_file() {
     local dir="$1"
     # plan.md または *.plan.md を探す（更新日時が新しい順）
-    local plan=$(find "$dir" -maxdepth 2 -type f \( -name "plan.md" -o -name "*.plan.md" \) 2>/dev/null | xargs ls -t 2>/dev/null | head -1)
+    local plan=$(find -L "$dir" -maxdepth 2 -type f \( -name "plan.md" -o -name "*.plan.md" \) 2>/dev/null | xargs ls -t 2>/dev/null | head -1)
     echo "$plan"
 }
 

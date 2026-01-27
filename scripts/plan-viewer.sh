@@ -48,7 +48,7 @@ show_worktrees() {
         --layout=reverse --height=100% \
         --border=rounded \
         --color=preview-bg:-1 \
-        --preview='p=$(echo {} | cut -f2); f=$(find "$p" -maxdepth 3 -type f -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -1); [ -n "$f" ] && glow -s dark "$f" || echo "No plan files"' \
+        --preview='p=$(echo {} | cut -f2); f=$(find -L "$p" -maxdepth 3 -type f -name "*.md" 2>/dev/null | xargs ls -t 2>/dev/null | head -1); [ -n "$f" ] && glow -s dark "$f" || echo "No plan files"' \
         --preview-window=right:60%:border-left:wrap \
         --preview-label=" Preview " \
         --prompt="Worktree> " \
@@ -58,7 +58,7 @@ show_worktrees() {
 
 show_files() {
     local wt_name=$(get_worktree_name "$PLANS_DIR")
-    local files=$(find "$PLANS_DIR" -maxdepth 3 -type f -name "*.md" 2>/dev/null)
+    local files=$(find -L "$PLANS_DIR" -maxdepth 3 -type f -name "*.md" 2>/dev/null)
 
     if [ -z "$files" ]; then
         echo "NO_FILES"
@@ -66,7 +66,7 @@ show_files() {
     fi
 
     # 更新日時順でソート、ファイル名とフルパスをタブ区切りで出力
-    find "$PLANS_DIR" -maxdepth 3 -type f -name "*.md" -print0 2>/dev/null | \
+    find -L "$PLANS_DIR" -maxdepth 3 -type f -name "*.md" -print0 2>/dev/null | \
         xargs -0 ls -t 2>/dev/null | \
         while read -r filepath; do
             echo -e "$(basename "$filepath")\t$filepath"
