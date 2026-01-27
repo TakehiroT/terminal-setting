@@ -50,7 +50,7 @@ layout {
             // 右側: Codex Reviewer (30%) - exitで自動再起動
             pane size="30%" name="reviewer" {
                 command "bash"
-                args "-c" "while true; do codex; echo '再起動中...'; sleep 1; done"
+                args "-c" "while true; do codex --sandbox danger-full-access; echo '再起動中...'; sleep 1; done"
             }
         }
     }
