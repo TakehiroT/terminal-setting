@@ -4,6 +4,5 @@
   "description": "tmux orchestration using Task tool for parallel sub-agent execution. Single orchestrator manages Frontend/Backend/Test workers via Task tool. Supports send-keys for direct inter-pane communication.",
   "author": {
     "name": "takehiro"
-  },
-  "hooks": "./hooks/hooks.json"
+  }
 }
