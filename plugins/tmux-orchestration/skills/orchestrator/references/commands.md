@@ -6,11 +6,12 @@ reviewerペイン（Impl.2）にメッセージを送信してレビューを依
 
 ```bash
 # 基本形
-tmux send-keys -t ide:Impl.2 -l 'tmux-reviewer skillを使って /review .branches/<feature>/ を行なってください' && \
+S=$(tmux display-message -p '#S') && \
+tmux send-keys -t "$S:Impl.2" -l 'tmux-reviewer skillを使って /review .branches/<feature>/ を行なってください' && \
 sleep 0.1 && \
-tmux send-keys -t ide:Impl.2 Escape && \
+tmux send-keys -t "$S:Impl.2" Escape && \
 sleep 0.1 && \
-tmux send-keys -t ide:Impl.2 Enter
+tmux send-keys -t "$S:Impl.2" Enter
 ```
 
 **注意**:
@@ -29,19 +30,22 @@ tmux send-keys -t ide:Impl.2 Enter
 
 | 対象 | ターゲット |
 |------|-----------|
-| オーケストレーター | `ide:Impl.1` |
-| レビュワー | `ide:Impl.2` |
+| オーケストレーター | `$S:Impl.1` (`S=$(tmux display-message -p '#S')`) |
+| レビュワー | `$S:Impl.2` (`S=$(tmux display-message -p '#S')`) |
 
 ## send-keys クイックリファレンス
 
 ```bash
+# セッション名を取得
+S=$(tmux display-message -p '#S')
+
 # claudeペイン（Enter で送信）
-tmux send-keys -t ide:Impl.1 'メッセージ' Enter
+tmux send-keys -t "$S:Impl.1" 'メッセージ' Enter
 
 # codexペイン（Escape → Enter で送信）
-tmux send-keys -t ide:Impl.2 -l 'メッセージ' && \
-sleep 0.1 && tmux send-keys -t ide:Impl.2 Escape && \
-sleep 0.1 && tmux send-keys -t ide:Impl.2 Enter
+tmux send-keys -t "$S:Impl.2" -l 'メッセージ' && \
+sleep 0.1 && tmux send-keys -t "$S:Impl.2" Escape && \
+sleep 0.1 && tmux send-keys -t "$S:Impl.2" Enter
 ```
 
 ## gtrコマンド

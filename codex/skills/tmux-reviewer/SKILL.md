@@ -16,8 +16,9 @@ description: tmux Implタブでレビュアーとして動作。Workerの実装�
 │       Claude          │  現在位置    │
 └───────────────────────┴──────────────┘
 
-tmux send-keys -t ide:Impl.1  # orchestratorへ
-tmux send-keys -t ide:Impl.2  # reviewer（自分）
+S=$(tmux display-message -p '#S')
+tmux send-keys -t "$S:Impl.1"  # orchestratorへ
+tmux send-keys -t "$S:Impl.2"  # reviewer（自分）
 ```
 
 ## 役割
@@ -96,15 +97,17 @@ tmux send-keys -t ide:Impl.2  # reviewer（自分）
 ### 修正指摘がある場合:
 
 ```bash
-tmux send-keys -t ide:Impl.1 -l '[REVIEW] 修正指摘あり: <worktree-path>/.spec/review.md を確認してください'
-tmux send-keys -t ide:Impl.1 Enter
+S=$(tmux display-message -p '#S') && \
+tmux send-keys -t "$S:Impl.1" -l '[REVIEW] 修正指摘あり: <worktree-path>/.spec/review.md を確認してください' && \
+tmux send-keys -t "$S:Impl.1" Enter
 ```
 
 ### 承認の場合:
 
 ```bash
-tmux send-keys -t ide:Impl.1 -l '[REVIEW] 承認: <worktree-path>/.spec/review.md に記録済み。PRを作成してください'
-tmux send-keys -t ide:Impl.1 Enter
+S=$(tmux display-message -p '#S') && \
+tmux send-keys -t "$S:Impl.1" -l '[REVIEW] 承認: <worktree-path>/.spec/review.md に記録済み。PRを作成してください' && \
+tmux send-keys -t "$S:Impl.1" Enter
 ```
 
 **注意**: `<worktree-path>` はオーケストレーターから受け取ったパスに置き換えること（例: `.branches/feature-auth/`）

@@ -1,12 +1,20 @@
 #!/bin/bash
 # tmux IDE環境起動スクリプト
-# 使用方法: idet [session-name]
+# 使用方法: idet [session-name]  (省略時は ide-1, ide-2... で自動採番)
 
-SESSION_NAME="${1:-ide}"
-
-# 既存セッションがあればアタッチ
-if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
-    exec tmux attach-session -t "$SESSION_NAME"
+if [ -n "$1" ]; then
+    SESSION_NAME="$1"
+    # 明示的に指定された場合、既存セッションがあればアタッチ
+    if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+        exec tmux attach-session -t "$SESSION_NAME"
+    fi
+else
+    # 自動採番: ide-1, ide-2, ... で空き番号を探す
+    N=1
+    while tmux has-session -t "ide-${N}" 2>/dev/null; do
+        N=$((N + 1))
+    done
+    SESSION_NAME="ide-${N}"
 fi
 
 # === Window 1: Code (yazi + terminal) ===

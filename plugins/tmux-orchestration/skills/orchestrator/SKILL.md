@@ -49,9 +49,10 @@ git add . && git commit -m "feat(<feature>): 実装完了"
 詳細: [references/commands.md](references/commands.md#レビュー依頼)
 
 ```bash
-tmux send-keys -t ide:Impl.2 -l 'tmux-reviewer skillで /review .branches/<feature>/ を実行' && \
-sleep 0.1 && tmux send-keys -t ide:Impl.2 Escape && \
-sleep 0.1 && tmux send-keys -t ide:Impl.2 Enter
+S=$(tmux display-message -p '#S') && \
+tmux send-keys -t "$S:Impl.2" -l 'tmux-reviewer skillで /review .branches/<feature>/ を実行' && \
+sleep 0.1 && tmux send-keys -t "$S:Impl.2" Escape && \
+sleep 0.1 && tmux send-keys -t "$S:Impl.2" Enter
 ```
 
 レビュー結果: `.spec/review.md` → 指摘があれば修正 → 再レビュー

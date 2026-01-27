@@ -223,8 +223,9 @@ echo "   r: Restart - claude/codex再起動"
 echo "   g: Go to Git - Gitタブへ移動"
 echo "   c: Cleanup & Restart - worktree削除＆再起動"
 echo "4. 外部からテキスト送信 (tmux send-keys):"
-echo "   tmux send-keys -t ide:Impl.1 'メッセージ'"
-echo "   tmux send-keys -t ide:Impl.1 Enter"
+echo "   S=\$(tmux display-message -p '#S')"
+echo "   tmux send-keys -t \"\$S:Impl.1\" 'メッセージ'"
+echo "   tmux send-keys -t \"\$S:Impl.1\" Enter"
 echo ""
 
 # gtr (Git Worktree Runner) のインストール確認
