@@ -4,106 +4,113 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## リポジトリ概要
 
-Ghostty + Zellij/tmux + Yazi を使ったIDE風ターミナル設定と、Claude Code用のオーケストレーションプラグインを提供するリポジトリ。
+Ghostty + Zellij/tmux + Yazi を使ったIDE風ターミナル設定と、Claude Code用のオーケストレーションプラグインを提供するリポジトリ。ビルドシステムやパッケージマネージャは使用していない（dotfiles + シェルスクリプト構成）。
 
-**2つの環境を提供:**
-- `ide` - Zellij版（モダンなUI、初心者向け）
-- `idet` - tmux版（セッション間通信、上級者向け）
-
-## アーキテクチャ
-
-```
-terminal-setting/
-├── ghostty/          # ターミナル設定（透明背景、Kanagawa Dragon）
-├── zellij/           # Zellijレイアウト・スクリプト
-│   ├── layouts/ide.kdl
-│   └── scripts/      # activate-skills, cleanup-restart等
-├── tmux/             # tmux設定・スクリプト
-│   └── scripts/ide.sh, button-menu.sh等
-├── yazi/             # ファイラー設定
-│   └── plugins/      # zellij-nav, glow, fg.yazi
-├── nvim/             # Neovim VSCode風設定 + LSP
-├── rules/            # Claude Code用コーディングルール
-├── plugins/          # Claude Codeプラグイン（マーケットプレイス）
-│   ├── zellij-orchestration/
-│   ├── tmux-orchestration/
-│   └── everything-claude-code/
-└── codex/            # Codex用スキル（reviewer）
-```
-
-### プラグイン構造
-
-各プラグインは `.claude-plugin/plugin.json` でメタデータを定義:
-- `agents/` - サブエージェント定義（YAML/MD形式）
-- `skills/` - スキル定義（SKILL.md）
-- `commands/` - スラッシュコマンド
-
-**利用可能なエージェント:**
-| エージェント | 役割 |
-|------------|------|
-| planner | 計画立案 |
-| architect | アーキテクチャ設計 |
-| tdd-guide | TDD実装 |
-| build-error-resolver | ビルドエラー解決 |
-| e2e-runner | E2Eテスト |
-| refactor-cleaner | リファクタリング・デッドコード削除 |
-| doc-updater | ドキュメント更新 |
+**2つのIDE環境:**
+- `ide` - Zellij版（モダンUI、KDLレイアウト定義）
+- `idet` - tmux版（`tmux send-keys`によるセッション間通信）
 
 ## 主要コマンド
 
-### インストール
-
 ```bash
+# インストール（全設定ファイルを~/.config/以下にコピー）
 ./install.sh
-```
 
-必要なツール:
-- コアツール: `brew install zellij tmux yazi neovim lazygit git-delta`
-- Yazi依存: `brew install glow bat fzf ripgrep fd`
-
-### IDE起動
-
-```bash
+# IDE起動
 ide     # Zellij版
 idet    # tmux版
 ```
 
-### Claude Codeプラグイン
+`install.sh`は設定ファイルのコピーとシンボリックリンク作成のみ。`rules/*.md`は`~/.claude/rules/terminal-setting-`プレフィックス付きでインストールされる。
 
-```bash
-# マーケットプレイス追加
-/plugin marketplace add TakehiroT/terminal-setting
+## アーキテクチャ
 
-# プラグインインストール
-/plugin install zellij-orchestration@terminal-setting
-/plugin install tmux-orchestration@terminal-setting
-/plugin install everything-claude-code@terminal-setting
+### 全体構造
+
+5タブ構成のIDE環境（Zellij/tmux共通）:
+
+| タブ | 内容 | キー |
+|------|------|------|
+| Code | Yazi(70%) + Terminal(30%)、ディレクトリ自動同期 | Alt+1 |
+| Git | lazygit（delta付きdiff） | Alt+2 |
+| Diff | mainとの差分表示 + worktree切り替え（fzf+delta） | Alt+3 |
+| Impl | Claude Orchestrator(70%) + Codex Reviewer(30%) | Alt+4 |
+| Monitor | vibe-dashboard + plan-watcher | Alt+5 |
+
+### ディレクトリ構成
+
+```
+terminal-setting/
+├── ghostty/              # Ghosttyターミナル設定（Kanagawa Dragon, 透明背景）
+├── zellij/
+│   ├── layouts/ide.kdl   # 5タブレイアウト定義
+│   └── scripts/          # activate-skills.sh, vibe-dashboard.sh等
+├── tmux/
+│   ├── tmux.conf         # tmux設定（→ ~/.tmux.conf）
+│   └── scripts/          # ide.sh, button-menu.sh, activate-skills.sh等
+├── yazi/
+│   ├── plugins/          # zellij-nav.yazi, glow.yazi（自前プラグイン）
+│   └── *.toml, init.lua  # Yazi設定
+├── nvim/init.lua         # VSCode風Neovim（lazy.nvim + LSP）
+├── lazygit/config.yml    # delta統合
+├── scripts/              # git-diff-viewer等
+├── rules/                # Claude Codeルール（6ファイル）
+├── plugins/              # Claude Codeプラグイン（3つ）
+│   ├── everything-claude-code/   # 7エージェント + 4スキル + 7コマンド
+│   ├── zellij-orchestration/     # Zellij版オーケストレーター
+│   └── tmux-orchestration/       # tmux版オーケストレーター
+├── codex/skills/         # Codexレビュアースキル
+└── templates/            # settings.jsonテンプレート
 ```
 
-## Vibe Coding（planモード連携）
+### プラグインアーキテクチャ
 
-プロジェクトの `.claude/settings.json`:
-```json
-{"plansDirectory": "./.spec"}
+各プラグインは `plugins/<name>/.claude-plugin/plugin.json` でメタデータ定義。
+
+```
+plugins/<name>/
+├── .claude-plugin/plugin.json   # バージョン、説明等
+├── agents/                      # サブエージェント定義（Markdown）
+├── skills/                      # スキル定義（SKILL.md）
+├── commands/                    # スラッシュコマンド
+└── hooks/subagent.json          # SubagentStart/Stopフック
 ```
 
-ワークフロー: planモード（Shift+Tab）→ 計画作成 → Worker起動 → 実装見守り
+**3プラグインの役割分担:**
 
-## オーケストレーターの使い方
+| プラグイン | 役割 | 主要コンテンツ |
+|-----------|------|--------------|
+| everything-claude-code | 専門エージェント群 | 7エージェント(planner, architect, tdd-guide, build-error-resolver, e2e-runner, refactor-cleaner, doc-updater) |
+| zellij-orchestration | Zellij版並列実行 | 4ワーカー(frontend/backend/test-worker, debugger) + orchestratorスキル |
+| tmux-orchestration | tmux版並列実行 | 同上（tmux send-keys対応） |
 
-`rules/orchestrator.md` に基づくワークフロー:
+### Vibe Coding フロー
 
-1. **要件ヒアリング**: 曖昧な点があれば確認
-2. **タスク分解**: TaskCreate/TaskUpdateで管理
-3. **サブエージェント委託**: 適切なエージェントにタスクを委託
-4. **品質チェック**: `pnpm check && pnpm test && pnpm build`
+Implタブ(Alt+4)でのAI並列開発ワークフロー:
+
+1. **計画**: Claude Code planモード(Shift+Tab)で`.spec/`に計画保存
+2. **実行**: OrchestratorがTask toolで複数Workerを並列起動
+3. **監視**: Monitorタブ(Alt+5)のvibe-dashboardでWorker進捗確認
+4. **レビュー**: Codex Reviewerがコード品質チェック
+5. **完了**: restartペイン(Zellij)またはAlt+m→c(tmux)でクリーンアップ
+
+### スクリプトの注意点
+
+`zellij/scripts/`と`tmux/scripts/`には大規模なシェルスクリプトがある:
+- `vibe-dashboard.sh` (14000行超): Worker進捗監視のステートマシン
+- `plan-watcher.sh` / `plan-viewer.sh`: `.spec/`ファイル監視・表示
+
+これらは`~/.config/zellij/scripts/`または`~/.config/tmux/scripts/`にインストールされる。
 
 ## コーディング規約
 
-`rules/` ディレクトリ参照:
-- **coding-style.md**: イミュータビリティ、早期リターン、命名規則
-- **git-workflow.md**: Conventional Commits、1コミット1変更
-- **testing.md**: TDD、FIRST原則、カバレッジ80%目標
+`rules/`ディレクトリにClaude Code用ルール6ファイル:
+- **orchestrator.md**: PDCAワークフロー、TaskCreate/TaskUpdate管理
+- **agents.md**: 7エージェントの選択基準と組み合わせパターン
+- **coding-style.md**: const優先、早期リターン、300行/50行目安
+- **git-workflow.md**: Conventional Commits (`<type>(<scope>): <subject>`)
+- **testing.md**: TDD (Red-Green-Refactor)、カバレッジ80%目標
+- **security.md**: 秘密情報管理、入力検証、脆弱性対策
 
 ### Conventional Commits
 
@@ -112,15 +119,3 @@ idet    # tmux版
 ```
 
 Type: feat, fix, refactor, docs, test, chore, style, perf, ci, revert
-
-## 設定ファイルの場所
-
-| 設定 | インストール先 |
-|------|--------------|
-| Zellij | `~/.config/zellij/` |
-| tmux | `~/.tmux.conf`, `~/.config/tmux/scripts/` |
-| Yazi | `~/.config/yazi/` |
-| Neovim | `~/.config/nvim/init.lua` |
-| Ghostty | `~/.config/ghostty/config` |
-| Claude rules | `~/.claude/rules/` |
-| Codex skills | `~/.codex/skills/` |
